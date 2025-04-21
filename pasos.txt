@@ -1,0 +1,2 @@
+ php artisan db:seed --class=RecompensasTableSeeder
+ php artisan db:seed --class=HabitacionSeeder

@@ -3,91 +3,127 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex justify-content-center mb-4">
-                        <div class="card" style="width: 18rem;">
-                            <img src="{{ asset('images/logo.jpg') }}" class="card-img-top" alt="Logo">
-                            
+        <div class="col-md-6 col-lg-5">
+            <div class="main-container">
+                <!-- Logo Section -->
+                <div class="logo-container">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Hotel Buena Vida Logo" class="img-fluid">
+                    <h2 class="page-title mt-3">REGISTRO DE TRABAJADORES</h2>
+                </div>
+
+                <!-- Login Form -->
+                <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
+                    @csrf
+                    
+                    <!-- Email Field -->
+                    <div class="mb-4">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>Correo Electrónico
+                        </label>
+                        <input id="email" 
+                               type="email" 
+                               class="form-control @error('email') is-invalid @enderror" 
+                               name="email" 
+                               value="{{ old('email') }}" 
+                               required 
+                               autocomplete="email" 
+                               autofocus
+                               placeholder="Ingrese su correo electrónico">
+                        @error('email')
+                            <div class="invalid-feedback">
+                                <strong>{{ $message }}</strong>
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- DNI Field -->
+                    <div class="mb-4">
+                        <label for="dni" class="form-label">
+                            <i class="fas fa-id-card me-2"></i>DNI
+                        </label>
+                        <input id="dni" 
+                               type="text" 
+                               class="form-control @error('dni') is-invalid @enderror" 
+                               name="dni" 
+                               value="{{ old('dni') }}" 
+                               required 
+                               autocomplete="dni"
+                               maxlength="8"
+                               placeholder="Ingrese su DNI">
+                        @error('dni')
+                            <div class="invalid-feedback">
+                                <strong>{{ $message }}</strong>
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-4">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Contraseña
+                        </label>
+                        <div class="input-group">
+                            <input id="password" 
+                                   type="password" 
+                                   class="form-control @error('password') is-invalid @enderror" 
+                                   name="password" 
+                                   required 
+                                   autocomplete="current-password"
+                                   placeholder="Ingrese su contraseña">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        @error('password')
+                            <div class="invalid-feedback">
+                                <strong>{{ $message }}</strong>
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   name="remember" 
+                                   id="remember" 
+                                   {{ old('remember') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="remember">
+                                Recordar contraseña
+                            </label>
                         </div>
                     </div>
-                    <h5  class="mb-4 text-center">REGISTRO DE TRABAJADORES</h5>
-                </div>
 
-                <div class="card-body  mb-4 text-center">
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __(' CORREO') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="dni" class="col-md-4 col-form-label text-md-end">{{ __('DNI') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="dni" type="dni" class="form-control @error('dni') is-invalid @enderror" name="dni" value="{{ old('dni') }}" required autocomplete="dni" autofocus>
-
-                                @error('dni')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('CONTRASEÑA') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3 ">
-                            <div class="col-md-6 offset-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Recordar contraseña') }}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Ingresar') }}
-                                </button>
-                                <!--
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif-->
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Ingresar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const password = document.getElementById('password');
+        const icon = this.querySelector('i');
+        
+        if (password.type === 'password') {
+            password.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            password.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+</script>
 @endsection

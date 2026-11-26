@@ -12,8 +12,9 @@ class HabitacionController extends Controller
     // Método para mostrar el formulario de asignación de habitación
     public function mostrarFormulario()
     {
-        $habitaciones = Habitacion::all();
-        return view('habitaciones.asignar', compact('habitaciones'));
+        $habitaciones = Habitacion::orderBy('puntos')->get();
+        $clientes = Cliente::orderBy('nombre')->get(['dni', 'nombre']);
+        return view('habitaciones.asignar', compact('habitaciones', 'clientes'));
     }
 
     public function asignar(Request $request)

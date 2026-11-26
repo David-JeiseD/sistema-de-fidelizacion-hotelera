@@ -1,241 +1,146 @@
 @extends('layouts.app')
 
+@section('title', 'Asignar habitación')
+
+@php
+    $iconoHabitacion = function ($nombre) {
+        $n = mb_strtolower($nombre);
+        return match (true) {
+            str_contains($n, 'premium') => 'fa-crown',
+            str_contains($n, 'matrimonial') => 'fa-heart',
+            str_contains($n, 'doble') => 'fa-user-group',
+            str_contains($n, 'personal'), str_contains($n, 'simple') => 'fa-user',
+            default => 'fa-bed',
+        };
+    };
+    $dniInicial = old('dni', request('dni'));
+@endphp
+
 @section('content')
-<div class="container">
-    <div class="main-container">
-        <!-- Header Section -->
-        <div class="logo-container">
-            <img src="{{ asset('images/logo.jpg') }}" alt="Hotel Buena Vida Logo" class="img-fluid">
-            <h1 class="page-title mt-3">HOTEL BUENA VIDA</h1>
-        </div>
-
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card">
-                    <div class="card-header bg-info text-white">
-                        <h4 class="mb-0">
-                            <i class="fas fa-bed me-2"></i>Asignar Habitación
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('habitaciones.asignar') }}" id="asignarForm" class="needs-validation" novalidate>
-                            @csrf
-                            
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-4">
-                                        <label for="dni" class="form-label">
-                                            <i class="fas fa-id-card me-2"></i>DNI del Cliente <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" 
-                                               name="dni" 
-                                               id="dni" 
-                                               class="form-control @error('dni') is-invalid @enderror" 
-                                               placeholder="Ingrese el DNI del cliente" 
-                                               maxlength="8" 
-                                               pattern="[0-9]{8}"
-                                               value="{{ old('dni') }}"
-                                               required>
-                                        @error('dni')
-                                            <div class="invalid-feedback">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
-                                        <div class="valid-feedback">
-                                            DNI válido
-                                        </div>
-                                        <div class="form-text">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Ingrese el DNI de 8 dígitos del cliente
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="mb-4">
-                                        <label for="habitacion_id" class="form-label">
-                                            <i class="fas fa-door-open me-2"></i>Seleccionar Habitación <span class="text-danger">*</span>
-                                        </label>
-                                        <select name="habitacion_id" 
-                                                id="habitacion_id" 
-                                                class="form-control @error('habitacion_id') is-invalid @enderror" 
-                                                required>
-                                            <option value="" disabled selected>Seleccione una habitación</option>
-                                            @foreach($habitaciones as $habitacion)
-                                                <option value="{{ $habitacion->id }}" 
-                                                        data-puntos="{{ $habitacion->puntos }}"
-                                                        {{ old('habitacion_id') == $habitacion->id ? 'selected' : '' }}>
-                                                    {{ $habitacion->nombre }} ({{ $habitacion->puntos }} puntos)
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('habitacion_id')
-                                            <div class="invalid-feedback">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
-                                        <div class="form-text">
-                                            <i class="fas fa-star me-1"></i>
-                                            Los puntos se asignarán automáticamente
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Preview Card -->
-                            <div id="previewCard" class="card border-success mb-4" style="display: none;">
-                                <div class="card-header bg-success text-white">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-eye me-2"></i>Vista Previa de la Asignación
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p><strong>DNI Cliente:</strong> <span id="previewDni">-</span></p>
-                                            <p><strong>Habitación:</strong> <span id="previewHabitacion">-</span></p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p><strong>Puntos a otorgar:</strong> 
-                                                <span id="previewPuntos" class="badge bg-warning">0</span>
-                                            </p>
-                                            <p><strong>Fecha:</strong> {{ date('d/m/Y') }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Info Alert -->
-                            <div class="alert alert-info" role="alert">
-                                <i class="fas fa-lightbulb me-2"></i>
-                                <strong>Información:</strong> Al asignar una habitación, el cliente recibirá automáticamente los puntos correspondientes a esa habitación.
-                            </div>
-                            
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Cancelar
-                                </a>
-                                <button type="submit" class="btn btn-info" id="asignarBtn">
-                                    <i class="fas fa-key me-2"></i>Asignar Habitación
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Available Rooms Grid -->
-                <div class="mt-4">
-                    <h5 class="mb-3">
-                        <i class="fas fa-list me-2"></i>Habitaciones Disponibles
-                    </h5>
-                    <div class="row">
-                        @foreach($habitaciones as $habitacion)
-                            <div class="col-md-4 mb-3">
-                                <div class="card border-info room-card" data-room-id="{{ $habitacion->id }}">
-                                    <div class="card-body text-center">
-                                        <i class="fas fa-bed fa-2x text-info mb-2"></i>
-                                        <h6 class="card-title">{{ $habitacion->nombre }}</h6>
-                                        <p class="card-text">
-                                            <span class="badge bg-warning">
-                                                <i class="fas fa-star me-1"></i>{{ $habitacion->puntos }} puntos
-                                            </span>
-                                        </p>
-                                        <button type="button" 
-                                                class="btn btn-outline-info btn-sm select-room" 
-                                                data-room-id="{{ $habitacion->id }}"
-                                                data-room-name="{{ $habitacion->nombre }}"
-                                                data-room-points="{{ $habitacion->puntos }}">
-                                            Seleccionar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
+<header class="page-head reveal">
+    <div>
+        <span class="eyebrow">Recepción</span>
+        <h1 class="page-title">Asignar <em>habitación</em></h1>
+        <p class="page-lead">Registra la estadía del huésped. Los puntos de la habitación se suman a su libreta al confirmar.</p>
     </div>
-</div>
+    <a href="{{ route('dashboard') }}" class="btn-hv btn-ghost"><i class="fas fa-arrow-left"></i>Volver al panel</a>
+</header>
+
+<form method="POST" action="{{ route('habitaciones.asignar') }}" id="asignarForm" class="split" novalidate>
+    @csrf
+    <div class="stack">
+        <section class="panel panel-pad reveal d1">
+            <h2 class="panel-title mb-3"><span class="subtle serif me-2">1.</span>Huésped</h2>
+            <div class="field">
+                <label for="dni" class="field-label">DNI del huésped<span class="req">*</span></label>
+                <div class="input-wrap">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" name="dni" id="dni" list="dnis" value="{{ $dniInicial }}" maxlength="8" inputmode="numeric"
+                           class="input input-lg num @error('dni') is-invalid @enderror" placeholder="Escribe o elige un DNI" autocomplete="off" required>
+                    <datalist id="dnis">
+                        @foreach ($clientes as $c)
+                            <option value="{{ $c->dni }}">{{ $c->nombre }}</option>
+                        @endforeach
+                    </datalist>
+                </div>
+                @error('dni')
+                    <span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>
+                @else
+                    <span class="field-hint" id="guestHint" aria-live="polite">Empieza a escribir para buscar entre {{ $clientes->count() }} huéspedes.</span>
+                @enderror
+            </div>
+        </section>
+
+        <section class="panel panel-pad reveal d2">
+            <div class="row-between mb-3">
+                <h2 class="panel-title"><span class="subtle serif me-2">2.</span>Habitación</h2>
+                @error('habitacion_id')<span class="field-error"><i class="fas fa-circle-exclamation"></i>Elige una habitación</span>@enderror
+            </div>
+            <fieldset class="rooms">
+                <legend class="visually-hidden">Tipo de habitación</legend>
+                @foreach ($habitaciones as $h)
+                    <label class="room">
+                        <input type="radio" name="habitacion_id" value="{{ $h->id }}" data-nombre="{{ $h->nombre }}" data-puntos="{{ $h->puntos }}"
+                               {{ old('habitacion_id') == $h->id ? 'checked' : '' }} required>
+                        <span class="room-body">
+                            <span class="room-icon"><i class="fas {{ $iconoHabitacion($h->nombre) }}"></i></span>
+                            <span>
+                                <span class="room-name d-block">{{ $h->nombre }}</span>
+                                <span class="room-pts d-block">+{{ $h->puntos }} puntos</span>
+                            </span>
+                            <span class="room-check"><i class="fas fa-check"></i></span>
+                        </span>
+                    </label>
+                @endforeach
+            </fieldset>
+        </section>
+    </div>
+
+    <aside class="panel pass sticky reveal d3" aria-label="Resumen de la estadía">
+        <div class="pass-head">
+            <span class="eyebrow">Pase de estadía</span>
+            <h2 class="panel-title mt-2" id="passGuest">Huésped por confirmar</h2>
+        </div>
+        <div class="pass-body">
+            <div class="pass-row"><span>DNI</span><b class="num" id="passDni">—</b></div>
+            <div class="pass-row"><span>Habitación</span><b id="passRoom">—</b></div>
+            <div class="pass-row"><span>Fecha</span><b id="passDate">{{ now()->format('d/m/Y') }}</b></div>
+            <div class="pass-points">
+                <b id="passPoints">+0</b>
+                <small>puntos a otorgar</small>
+            </div>
+            <button type="submit" class="btn-hv btn-lg btn-block" id="asignarBtn" disabled>
+                <i class="fas fa-key"></i>Confirmar estadía
+            </button>
+            <p class="subtle text-center" style="font-size:12.5px">Una estadía por huésped al día.</p>
+        </div>
+    </aside>
+</form>
 @endsection
 
 @section('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const dniInput = document.getElementById('dni');
-    const habitacionSelect = document.getElementById('habitacion_id');
-    const previewCard = document.getElementById('previewCard');
-    const asignarForm = document.getElementById('asignarForm');
-    const asignarBtn = document.getElementById('asignarBtn');
+document.addEventListener('DOMContentLoaded', function () {
+    const huespedes = @json($clientes->pluck('nombre', 'dni'));
+    const dni = document.getElementById('dni');
+    const hint = document.getElementById('guestHint');
+    const btn = document.getElementById('asignarBtn');
+    const $ = id => document.getElementById(id);
+    document.getElementById('passDate').textContent = new Date().toLocaleDateString('es-PE');
 
-    // DNI validation
-    dniInput.addEventListener('input', function() {
-        const value = this.value;
-        const isValid = /^[0-9]{8}$/.test(value);
-        
-        if (value.length === 8 && isValid) {
-            this.classList.add('is-valid');
-            this.classList.remove('is-invalid');
-        } else if (value.length > 0) {
-            this.classList.add('is-invalid');
-            this.classList.remove('is-valid');
-        } else {
-            this.classList.remove('is-valid', 'is-invalid');
+    function actualizar() {
+        dni.value = dni.value.replace(/\D/g, '').slice(0, 8);
+        const nombre = huespedes[dni.value];
+        const room = document.querySelector('input[name="habitacion_id"]:checked');
+
+        $('passDni').textContent = dni.value || '—';
+        $('passGuest').textContent = nombre || 'Huésped por confirmar';
+        dni.classList.toggle('is-valid', !!nombre);
+        dni.classList.toggle('is-invalid', dni.value.length === 8 && !nombre);
+        if (hint) {
+            hint.className = 'field-hint' + (nombre ? ' guest-found' : dni.value.length === 8 ? ' guest-missing' : '');
+            hint.textContent = nombre
+                ? '✓ ' + nombre
+                : dni.value.length === 8 ? 'No hay ningún huésped con ese DNI.' : 'Escribe los 8 dígitos del DNI.';
         }
-        updatePreview();
-    });
 
-    // Room selection
-    habitacionSelect.addEventListener('change', function() {
-        updatePreview();
-    });
-
-    // Room card selection
-    document.querySelectorAll('.select-room').forEach(button => {
-        button.addEventListener('click', function() {
-            const roomId = this.dataset.roomId;
-            habitacionSelect.value = roomId;
-            
-            // Visual feedback
-            document.querySelectorAll('.room-card').forEach(card => {
-                card.classList.remove('border-success');
-                card.classList.add('border-info');
-            });
-            
-            this.closest('.room-card').classList.remove('border-info');
-            this.closest('.room-card').classList.add('border-success');
-            
-            updatePreview();
-            showToast('Habitación seleccionada: ' + this.dataset.roomName, 'success');
-        });
-    });
-
-    // Update preview
-    function updatePreview() {
-        const dni = dniInput.value;
-        const selectedOption = habitacionSelect.options[habitacionSelect.selectedIndex];
-        
-        if (dni && selectedOption.value) {
-            document.getElementById('previewDni').textContent = dni;
-            document.getElementById('previewHabitacion').textContent = selectedOption.text;
-            document.getElementById('previewPuntos').textContent = selectedOption.dataset.puntos || '0';
-            previewCard.style.display = 'block';
-        } else {
-            previewCard.style.display = 'none';
+        $('passRoom').textContent = room ? room.dataset.nombre : '—';
+        const pts = $('passPoints'), nuevo = '+' + (room ? room.dataset.puntos : 0);
+        if (pts.textContent !== nuevo) {
+            pts.textContent = nuevo;
+            pts.classList.add('bump');
+            setTimeout(() => pts.classList.remove('bump'), 250);
         }
+        btn.disabled = !(nombre && room);
     }
 
-    // Form submission
-    asignarForm.addEventListener('submit', function() {
-        asignarBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Asignando...';
-        asignarBtn.disabled = true;
-    });
+    dni.addEventListener('input', actualizar);
+    document.querySelectorAll('input[name="habitacion_id"]').forEach(r => r.addEventListener('change', actualizar));
+    actualizar();
 
-    // Only numbers for DNI
-    dniInput.addEventListener('keypress', function(e) {
-        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
-            e.preventDefault();
-        }
+    document.getElementById('asignarForm').addEventListener('submit', function () {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Registrando…';
     });
 });
 </script>

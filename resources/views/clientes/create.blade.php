@@ -1,185 +1,102 @@
 @extends('layouts.app')
 
+@section('title', 'Registrar huésped')
+
 @section('content')
-<div class="container">
-    <div class="main-container">
-        <!-- Header Section -->
-        <div class="logo-container">
-            <img src="{{ asset('images/logo.jpg') }}" alt="Hotel Buena Vida Logo" class="img-fluid">
-            <h1 class="page-title mt-3">HOTEL BUENA VIDA</h1>
+<header class="page-head reveal">
+    <div>
+        <span class="eyebrow">Nuevo miembro</span>
+        <h1 class="page-title">Registrar <em>huésped</em></h1>
+        <p class="page-lead">Su tarjeta del club se emite al instante y empieza a sumar puntos desde la primera estadía.</p>
+    </div>
+    <a href="{{ route('dashboard') }}" class="btn-hv btn-ghost"><i class="fas fa-arrow-left"></i>Volver al panel</a>
+</header>
+
+<div class="split">
+    <form method="POST" action="{{ route('clientes.store') }}" id="registrarForm" class="panel panel-pad reveal d1" novalidate>
+        @csrf
+        <h2 class="panel-title mb-1">Datos del huésped</h2>
+        <p class="panel-note mb-4">Los campos marcados con <span style="color:var(--terra)">*</span> son obligatorios.</p>
+
+        <div class="field">
+            <label for="nombre" class="field-label">Nombre completo<span class="req">*</span></label>
+            <div class="input-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}" maxlength="100"
+                       class="input @error('nombre') is-invalid @enderror" placeholder="Ej. María Fernanda Quispe" required autofocus>
+            </div>
+            @error('nombre')<span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>@enderror
         </div>
 
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h4 class="mb-0">
-                            <i class="fas fa-user-plus me-2"></i>Registrar Nuevo Cliente
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('clientes.store') }}" id="registrarForm" class="needs-validation" novalidate>
-                            @csrf
-                            
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-4">
-                                        <label for="nombre" class="form-label">
-                                            <i class="fas fa-user me-2"></i>Nombre Completo <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" 
-                                               name="nombre" 
-                                               id="nombre" 
-                                               class="form-control @error('nombre') is-invalid @enderror" 
-                                               placeholder="Ingrese el nombre completo del cliente" 
-                                               value="{{ old('nombre') }}"
-                                               required>
-                                        @error('nombre')
-                                            <div class="invalid-feedback">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
-                                        <div class="valid-feedback">
-                                            ¡Perfecto!
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="mb-4">
-                                        <label for="dni" class="form-label">
-                                            <i class="fas fa-id-card me-2"></i>DNI <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" 
-                                               name="dni" 
-                                               id="dni" 
-                                               class="form-control @error('dni') is-invalid @enderror" 
-                                               placeholder="Ingrese el DNI (8 dígitos)" 
-                                               maxlength="8" 
-                                               pattern="[0-9]{8}"
-                                               value="{{ old('dni') }}"
-                                               required>
-                                        @error('dni')
-                                            <div class="invalid-feedback">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
-                                        <div class="valid-feedback">
-                                            DNI válido
-                                        </div>
-                                        <div class="form-text">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Debe contener exactamente 8 dígitos
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        <div class="field">
+            <label for="dni" class="field-label">DNI<span class="req">*</span></label>
+            <div class="input-wrap">
+                <i class="fas fa-id-card"></i>
+                <input type="text" id="dni" name="dni" value="{{ old('dni') }}" maxlength="8" inputmode="numeric" pattern="[0-9]{8}"
+                       class="input num @error('dni') is-invalid @enderror" placeholder="8 dígitos" required>
+            </div>
+            @error('dni')
+                <span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>
+            @else
+                <span class="field-hint" id="dniHint">Documento Nacional de Identidad, 8 dígitos.</span>
+            @enderror
+        </div>
 
-                            <!-- Info Card -->
-                            <div class="alert alert-info" role="alert">
-                                <i class="fas fa-lightbulb me-2"></i>
-                                <strong>Información:</strong> Una vez registrado, el cliente podrá acumular puntos por cada estadía y canjearlos por recompensas.
-                            </div>
-                            
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Cancelar
-                                </a>
-                                <button type="submit" class="btn btn-success" id="registrarBtn">
-                                    <i class="fas fa-save me-2"></i>Registrar Cliente
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+        <div class="note mt-4">
+            <i class="fas fa-lightbulb"></i>
+            <span>Tras registrarlo, asígnale su primera habitación para que empiece a acumular puntos.</span>
+        </div>
 
-                <!-- Quick Actions -->
-                <div class="row mt-4">
-                    <div class="col-md-4">
-                        <div class="card border-primary">
-                            <div class="card-body text-center">
-                                <i class="fas fa-search fa-2x text-primary mb-2"></i>
-                                <h6>Consultar Puntos</h6>
-                                <a href="{{ route('clientes.puntos') }}" class="btn btn-primary btn-sm">
-                                    Consultar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card border-info">
-                            <div class="card-body text-center">
-                                <i class="fas fa-bed fa-2x text-info mb-2"></i>
-                                <h6>Asignar Habitación</h6>
-                                <a href="{{ route('habitaciones.asignar') }}" class="btn btn-info btn-sm">
-                                    Asignar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card border-warning">
-                            <div class="card-body text-center">
-                                <i class="fas fa-gift fa-2x text-warning mb-2"></i>
-                                <h6>Ver Recompensas</h6>
-                                <button class="btn btn-warning btn-sm" onclick="showToast('Primero debe consultar un cliente', 'info')">
-                                    Ver Canjes
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="d-flex gap-2 justify-content-end mt-4">
+            <a href="{{ route('dashboard') }}" class="btn-hv btn-ghost">Cancelar</a>
+            <button type="submit" class="btn-hv" id="registrarBtn"><i class="fas fa-user-plus"></i>Registrar huésped</button>
+        </div>
+    </form>
+
+    <aside class="stack sticky reveal d2">
+        <div>
+            <span class="eyebrow mb-3">Vista previa</span>
+            <div class="mt-3">
+                @include('partials.member-card', [
+                    'nombre' => old('nombre') ?: 'Nombre del huésped',
+                    'dni' => old('dni') ?: '— — — —',
+                    'puntos' => 0,
+                    'desde' => now()->locale('es')->isoFormat('MM/YYYY'),
+                ])
             </div>
         </div>
-    </div>
+        <p class="subtle text-center" style="font-size:13px">La tarjeta se actualiza mientras escribes.</p>
+    </aside>
 </div>
 @endsection
 
 @section('scripts')
 <script>
-// Form validation and enhancement
-document.getElementById('registrarForm').addEventListener('submit', function(e) {
-    const btn = document.getElementById('registrarBtn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Registrando...';
-    btn.disabled = true;
-});
+document.addEventListener('DOMContentLoaded', function () {
+    const nombre = document.getElementById('nombre');
+    const dni = document.getElementById('dni');
+    const outNombre = document.querySelector('[data-mc="nombre"]');
+    const outDni = document.querySelector('[data-mc="dni"]');
 
-// DNI validation
-document.getElementById('dni').addEventListener('input', function() {
-    const value = this.value;
-    const isValid = /^[0-9]{8}$/.test(value);
-    
-    if (value.length === 8 && isValid) {
-        this.classList.add('is-valid');
-        this.classList.remove('is-invalid');
-    } else if (value.length > 0) {
-        this.classList.add('is-invalid');
-        this.classList.remove('is-valid');
-    } else {
-        this.classList.remove('is-valid', 'is-invalid');
-    }
-});
+    nombre.addEventListener('input', () => outNombre.textContent = nombre.value.trim() || 'Nombre del huésped');
+    dni.addEventListener('input', () => {
+        dni.value = dni.value.replace(/\D/g, '').slice(0, 8);
+        outDni.textContent = dni.value || '— — — —';
+        dni.classList.toggle('is-valid', dni.value.length === 8);
+    });
 
-// Name validation
-document.getElementById('nombre').addEventListener('input', function() {
-    const value = this.value.trim();
-    
-    if (value.length >= 3) {
-        this.classList.add('is-valid');
-        this.classList.remove('is-invalid');
-    } else if (value.length > 0) {
-        this.classList.add('is-invalid');
-        this.classList.remove('is-valid');
-    } else {
-        this.classList.remove('is-valid', 'is-invalid');
-    }
-});
-
-// Only numbers for DNI
-document.getElementById('dni').addEventListener('keypress', function(e) {
-    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
-        e.preventDefault();
-    }
+    document.getElementById('registrarForm').addEventListener('submit', function (e) {
+        if (!nombre.value.trim() || !/^\d{8}$/.test(dni.value)) {
+            e.preventDefault();
+            nombre.classList.toggle('is-invalid', !nombre.value.trim());
+            dni.classList.toggle('is-invalid', !/^\d{8}$/.test(dni.value));
+            showToast('Completa el nombre y un DNI de 8 dígitos.', 'warning', 'Revisa el formulario');
+            return;
+        }
+        const btn = document.getElementById('registrarBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Registrando…';
+    });
 });
 </script>
 @endsection

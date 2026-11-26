@@ -1,92 +1,57 @@
 @extends('layouts.app')
 
+@section('title', 'Nuevo trabajador')
+
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
+<header class="page-head reveal">
+    <div>
+        <span class="eyebrow">Administración</span>
+        <h1 class="page-title">Nuevo <em>trabajador</em></h1>
+        <p class="page-lead">Crea el acceso de un miembro del personal. Entrará con su correo, DNI y contraseña.</p>
+    </div>
+    <a href="{{ route('dashboard') }}" class="btn-hv btn-ghost"><i class="fas fa-arrow-left"></i>Volver al panel</a>
+</header>
 
-                <div class="card-body">
-                    <!-- Cambiamos la acción del formulario para que apunte a la nueva ruta -->
-                    <form method="POST" action="{{ url('/9ax1g9') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="dni" class="col-md-4 col-form-label text-md-end">{{ __('DNI') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="dni" type="text" class="form-control @error('dni') is-invalid @enderror" name="dni" value="{{ old('dni') }}" required autocomplete="dni" maxlength="8">
-
-                                @error('dni')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+<form method="POST" action="{{ url('/9ax1g9') }}" class="panel panel-pad reveal d1" style="max-width:760px" novalidate>
+    @csrf
+    <div class="grid grid-2">
+        @foreach ([
+            ['name', 'Nombre completo', 'text', 'fa-user', 'Ej. Rosa Huamán', 'name'],
+            ['email', 'Correo electrónico', 'email', 'fa-envelope', 'nombre@buenavida.pe', 'email'],
+            ['dni', 'DNI', 'text', 'fa-id-card', '8 dígitos', 'off'],
+        ] as [$campo, $label, $tipo, $icono, $ph, $auto])
+            <div class="field m-0 {{ $campo === 'name' ? 'grid-full' : '' }}" @if($campo === 'name') style="grid-column:1/-1" @endif>
+                <label for="{{ $campo }}" class="field-label">{{ $label }}<span class="req">*</span></label>
+                <div class="input-wrap">
+                    <i class="fas {{ $icono }}"></i>
+                    <input id="{{ $campo }}" type="{{ $tipo }}" name="{{ $campo }}" value="{{ old($campo) }}" placeholder="{{ $ph }}" autocomplete="{{ $auto }}"
+                           class="input @error($campo) is-invalid @enderror {{ $campo === 'dni' ? 'num' : '' }}"
+                           @if($campo === 'dni') maxlength="8" inputmode="numeric" @endif required>
                 </div>
+                @error($campo)<span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>@enderror
+            </div>
+        @endforeach
+
+        <div class="field m-0">
+            <label for="password" class="field-label">Contraseña<span class="req">*</span></label>
+            <div class="input-wrap">
+                <i class="fas fa-lock"></i>
+                <input id="password" type="password" name="password" class="input @error('password') is-invalid @enderror" placeholder="Mínimo 8 caracteres" autocomplete="new-password" required>
+            </div>
+            @error('password')<span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>@enderror
+        </div>
+        <div class="field m-0">
+            <label for="password-confirm" class="field-label">Confirmar contraseña<span class="req">*</span></label>
+            <div class="input-wrap">
+                <i class="fas fa-lock"></i>
+                <input id="password-confirm" type="password" name="password_confirmation" class="input" placeholder="Repítela" autocomplete="new-password" required>
             </div>
         </div>
     </div>
-</div>
+
+    <div class="d-flex gap-2 justify-content-end mt-4 pt-2">
+        <a href="{{ route('dashboard') }}" class="btn-hv btn-ghost">Cancelar</a>
+        <button type="submit" class="btn-hv"><i class="fas fa-id-badge"></i>Crear acceso</button>
+    </div>
+</form>
 @endsection

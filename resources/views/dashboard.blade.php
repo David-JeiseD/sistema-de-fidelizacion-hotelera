@@ -1,125 +1,105 @@
 @extends('layouts.app')
 
+@section('title', 'Panel')
+
 @section('content')
-<div class="container">
-    <div class="main-container">
-        <!-- Header Section -->
-        <div class="logo-container">
-            <img src="{{ asset('images/logo.jpg') }}" alt="Hotel Buena Vida Logo" class="img-fluid">
-            <h1 class="page-title mt-3">HOTEL BUENA VIDA</h1>
-            <p class="text-muted">Panel de Control - Sistema de Gestión</p>
+<section class="hero reveal">
+    @include('partials.rings', ['class' => 'hero-rings'])
+    <span class="eyebrow" id="fecha-hoy">Recepción</span>
+    <h1 class="mt-3"><span id="saludo">Hola</span>, <em>{{ strtok(Auth::user()->name, ' ') }}</em>.</h1>
+    <p>Esto es lo que está pasando en el club de huéspedes. Elige una tarea para empezar el turno.</p>
+</section>
+
+<div class="actions">
+    <a href="{{ route('clientes.create') }}" class="action reveal d1">
+        <span class="action-icon"><i class="fas fa-user-plus"></i></span>
+        <div>
+            <h3>Registrar huésped</h3>
+            <p class="mt-1">Da de alta a un nuevo miembro del club con su DNI.</p>
         </div>
-
-        <!-- Alerts -->
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        <!-- Main Actions Grid -->
-        <div class="row g-4">
-            <!-- Registrar Cliente -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="icon-wrapper icon-primary mx-auto">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <h5 class="card-title">Registrar Cliente</h5>
-                        <p class="card-text text-muted">
-                            Registra nuevos clientes en el sistema para gestionar sus puntos y recompensas.
-                        </p>
-                        <a href="{{ route('clientes.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>Registrar
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Consultar Puntos -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="icon-wrapper icon-warning mx-auto">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h5 class="card-title">Consultar Puntos</h5>
-                        <p class="card-text text-muted">
-                            Consulta los puntos acumulados de los clientes y accede al flujo de canje.
-                        </p>
-                        <a href="{{ route('clientes.puntos') }}" class="btn btn-warning">
-                            <i class="fas fa-search me-2"></i>Consultar
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Asignar Habitación -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="icon-wrapper icon-success mx-auto">
-                            <i class="fas fa-bed"></i>
-                        </div>
-                        <h5 class="card-title">Asignar Habitación</h5>
-                        <p class="card-text text-muted">
-                            Asigna habitaciones a los clientes y gestiona sus estadías de manera eficiente.
-                        </p>
-                        <a href="{{ route('habitaciones.asignar') }}" class="btn btn-success">
-                            <i class="fas fa-key me-2"></i>Asignar
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <span class="action-go">Nuevo registro <i class="fas fa-arrow-right"></i></span>
+    </a>
+    <a href="{{ route('habitaciones.formulario') }}" class="action reveal d2">
+        <span class="action-icon"><i class="fas fa-key"></i></span>
+        <div>
+            <h3>Asignar habitación</h3>
+            <p class="mt-1">Registra la estadía y suma los puntos al instante.</p>
         </div>
-
-        <!-- Quick Stats (opcional - puedes agregar estadísticas) -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <h4 class="mb-4">
-                    <i class="fas fa-chart-bar me-2"></i>Accesos Rápidos
-                </h4>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card text-center">
-                    <i class="fas fa-users fa-2x mb-2"></i>
-                    <h6>Gestión de Clientes</h6>
-                    <small>Administra la base de datos de clientes</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card text-center">
-                    <i class="fas fa-gift fa-2x mb-2"></i>
-                    <h6>Sistema de Puntos</h6>
-                    <small>Controla el programa de fidelidad</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card text-center">
-                    <i class="fas fa-hotel fa-2x mb-2"></i>
-                    <h6>Habitaciones</h6>
-                    <small>Gestiona las asignaciones</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card text-center">
-                    <i class="fas fa-exchange-alt fa-2x mb-2"></i>
-                    <h6>Canjes</h6>
-                    <small>Administra las recompensas</small>
-                </div>
-            </div>
+        <span class="action-go">Entregar llave <i class="fas fa-arrow-right"></i></span>
+    </a>
+    <a href="{{ route('clientes.puntos') }}" class="action reveal d3">
+        <span class="action-icon"><i class="fas fa-gift"></i></span>
+        <div>
+            <h3>Puntos y canjes</h3>
+            <p class="mt-1">Consulta la libreta de un huésped y canjea recompensas.</p>
         </div>
-    </div>
+        <span class="action-go">Abrir libreta <i class="fas fa-arrow-right"></i></span>
+    </a>
 </div>
+
+<div class="grid grid-4 mt-4">
+    @foreach ([
+        ['Huéspedes', $stats['clientes'], 'fa-users', 'miembros del club'],
+        ['Estadías', $stats['estadias_mes'], 'fa-bed', 'en ' . now()->locale('es')->isoFormat('MMMM')],
+        ['Canjes', $stats['canjes_mes'], 'fa-gift', 'en ' . now()->locale('es')->isoFormat('MMMM')],
+        ['Puntos vigentes', $stats['puntos'], 'fa-star', 'por canjear en total'],
+    ] as $i => [$label, $valor, $icono, $pie])
+        <div class="panel stat reveal d{{ min($i + 1, 4) }}">
+            <div class="stat-label"><i class="fas {{ $icono }}"></i>{{ $label }}</div>
+            <div class="stat-value" data-count="{{ $valor }}">{{ number_format($valor, 0, ',', '.') }}</div>
+            <div class="stat-foot">{{ $pie }}</div>
+        </div>
+    @endforeach
+</div>
+
+<section class="panel mt-4 reveal d4">
+    <div class="panel-head">
+        <div>
+            <h2 class="panel-title">Movimientos recientes</h2>
+            <p class="panel-note">Últimas estadías y canjes registrados</p>
+        </div>
+        <a href="{{ route('clientes.puntos') }}" class="btn-hv btn-ghost btn-sm">Ver libretas</a>
+    </div>
+    @if ($actividad->isEmpty())
+        <div class="empty"><i class="fas fa-feather"></i>Aún no hay movimientos. La primera estadía aparecerá aquí.</div>
+    @else
+        <ul class="feed">
+            @foreach ($actividad as $mov)
+                <li>
+                    <span class="feed-icon {{ $mov['tipo'] }}"><i class="fas {{ $mov['tipo'] === 'plus' ? 'fa-bed' : 'fa-gift' }}"></i></span>
+                    <div style="min-width:0">
+                        <div class="feed-title">{{ $mov['cliente'] ?? 'Huésped eliminado' }}</div>
+                        <div class="feed-sub">{{ $mov['detalle'] }} · {{ \Carbon\Carbon::parse($mov['fecha'])->locale('es')->isoFormat('D MMM YYYY') }}</div>
+                    </div>
+                    <span class="pill {{ $mov['tipo'] === 'plus' ? 'pill-plus' : 'pill-minus' }} num">
+                        {{ $mov['tipo'] === 'plus' ? '+' : '−' }}{{ $mov['puntos'] }} pts
+                    </span>
+                </li>
+            @endforeach
+        </ul>
+    @endif
+</section>
+@endsection
+
+@section('scripts')
+<script>
+(function () {
+    const h = new Date().getHours();
+    document.getElementById('saludo').textContent = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+    const f = new Intl.DateTimeFormat('es-PE', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+    document.getElementById('fecha-hoy').textContent = f;
+
+    // Contadores que suben al cargar
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('[data-count]').forEach(el => {
+        const fin = +el.dataset.count, t0 = performance.now(), dur = 900;
+        const fmt = n => n.toLocaleString('es-PE');
+        (function paso(t) {
+            const p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+            el.textContent = fmt(Math.round(fin * e));
+            if (p < 1) requestAnimationFrame(paso);
+        })(t0);
+    });
+})();
+</script>
 @endsection

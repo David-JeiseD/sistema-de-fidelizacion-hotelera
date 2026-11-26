@@ -11,7 +11,15 @@ class Habitacion extends Model {
 
     use HasFactory;
     protected $table = 'habitaciones'; 
-    protected $fillable = ['hotel_id', 'nombre', 'puntos'];
+    protected $fillable = ['hotel_id', 'nombre', 'puntos', 'activo'];
+
+    protected $casts = ['activo' => 'boolean'];
+
+    protected $attributes = ['activo' => true];
+
+    public function visitas() {
+        return $this->hasMany(Visita::class);
+    }
 
     public function hotel() {
         return $this->belongsTo(Hotel::class);

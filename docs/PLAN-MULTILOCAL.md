@@ -1,6 +1,6 @@
 # Plan: de un hotel a una plataforma multi-local
 
-> Estado: **fases 1, 2 y 3 completadas (2026-11-26)**. Siguiente: fase 4 (pantallas de gestión: personal, hoteles y alta de empresas).
+> Estado: **fases 1 a 4 completadas (2026-11-26): el sistema ya se puede vender a varias empresas.** Siguiente (opcional): fase 5, reportes consolidados de cadena.
 
 ## 1. La idea central
 
@@ -79,7 +79,7 @@ Quien tiene acceso a varios hoteles elige el **hotel activo** desde la barra lat
 | **1. Modelo de datos** ✅ | Tablas `empresas`, columnas `empresa_id`/`hotel_id`, uniques compuestos, **migración de los datos actuales** a una empresa "Hotel Buena Vida" | La app funciona igual que hoy |
 | **2. Aislamiento** ✅ | Global scopes, hotel activo en sesión, tests de fuga | Dos empresas de prueba conviven sin verse |
 | **3. Roles** ✅ | Columna `rol`, políticas, menú según rol | Recepcionista ya no puede editar QR ni establecimiento |
-| **4. Pantallas de gestión** | Hoteles de la empresa, personal, selector de hotel, panel super-admin (empresas, plan, estado) | Puedes dar de alta un cliente nuevo sin tocar la base de datos |
+| **4. Pantallas de gestión** ✅ | Hoteles de la empresa, personal, selector de hotel, panel super-admin (empresas, plan, estado) | Puedes dar de alta un cliente nuevo sin tocar la base de datos |
 | **5. Reportes de cadena** | Panel consolidado vs. por hotel | El dueño ve toda su cadena |
 | **6. Opcional** | Subdominios (`sol.tuapp.com`), cobro de suscripción, vencimiento de puntos, auditoría | Producto listo para escalar |
 
@@ -112,3 +112,10 @@ Cada fase deja la app funcionando y con tests verdes; se puede vender después d
 ## 10. Privacidad
 
 Compartir la identidad entre empresas implica que el nombre registrado por un hotel lo verá otro hotel cuando inscriba a la misma persona. Por la Ley 29733 (Protección de Datos Personales, Perú) conviene pedir el **consentimiento** del huésped al inscribirlo y guardar solo lo mínimo en la persona global (documento y nombre). Teléfono, correo o notas, si se agregan, van en la membresía de cada empresa.
+
+## 11. Operación (fase 4)
+
+- **Crear el super-admin:** `php artisan plataforma:super-admin tu@correo.com --nombre="Tu Nombre" --dni=12345678` (pide la contraseña sin mostrarla).
+- **Dar de alta un cliente:** Plataforma → Nueva empresa (empresa + primer hotel + su administrador). El administrador completa logo, QR, tipos de habitación, recompensas y personal.
+- **Plan:** número de hoteles por empresa, editable en Plataforma; no puede bajar de los hoteles que ya tiene.
+- **Desactivar en vez de borrar:** personal, tipos de habitación y recompensas. Borrar un tipo de habitación o una recompensa con uso borraría en cascada estadías o canjes (y puntos), por eso la app lo impide.

@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Datos del hotel del usuario para el menú, el login y las tarjetas.
-        View::composer(['layouts.app', 'partials.auth-art', 'partials.member-card'], function ($view) {
+        View::composer(['layouts.app', 'partials.auth-art', 'partials.member-card', 'tipos-habitacion.*', 'hoteles.*'], function ($view) {
             $view->with('hotel', Hotel::actual());
         });
     }

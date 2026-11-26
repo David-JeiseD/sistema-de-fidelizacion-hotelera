@@ -37,7 +37,7 @@ class FidelizacionTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'nuevo@test.local']);
 
         $admin = User::factory()->create();
-        $this->actingAs($admin)->post('/9ax1g9', $datos)->assertRedirect(route('dashboard'));
+        $this->actingAs($admin)->post('/9ax1g9', $datos)->assertRedirect(route('personal.index'));
         $this->assertDatabaseHas('users', ['email' => 'nuevo@test.local']);
         $this->assertAuthenticatedAs($admin);
     }

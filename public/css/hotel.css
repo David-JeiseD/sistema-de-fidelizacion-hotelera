@@ -391,6 +391,7 @@ a:hover { color: var(--pine); }
 .ledger .amount.minus { color: var(--terra); }
 .ledger .balance { font-family: var(--serif); font-size: 17px; color: var(--ink); font-variant-numeric: tabular-nums lining-nums; }
 .table-scroll { overflow-x: auto; }
+.ledger.compacta td, .ledger.compacta th { white-space: nowrap; }
 
 .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .summary > div { padding: 18px 24px; }

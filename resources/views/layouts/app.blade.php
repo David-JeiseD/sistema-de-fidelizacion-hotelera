@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#1f3d36">
-    <title>@hasSection('title')@yield('title') · @endif {{ $hotel->nombre }}</title>
+    <title>@hasSection('title')@yield('title') · @endif {{ auth()->user()?->esSuperAdmin() ? 'Fidelización hotelera' : $hotel->nombre }}</title>
     <link rel="icon" href="{{ $hotel->logo_url }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=fraunces:400,400i,500,500i,600|manrope:400,500,600,700&display=swap" rel="stylesheet">
@@ -28,13 +28,18 @@
                 ['clientes.puntos', ['clientes.puntos*', 'canjes.*'], 'fa-book-open', 'Libreta de puntos', $operan],
                 ['cobrar', 'cobrar', 'fa-qrcode', 'Cobrar con QR', $operan],
             ],
-            'Administración' => [
+            'Este hotel' => [
                 ['establecimiento.edit', 'establecimiento.*', 'fa-building', 'Establecimiento', $gestionan],
+                ['tipos-habitacion.index', 'tipos-habitacion.*', 'fa-bed', 'Tipos de habitación', $gestionan],
                 ['metodos-pago.index', 'metodos-pago.*', 'fa-wallet', 'Métodos de pago', $gestionan],
-                ['register', 'register', 'fa-id-badge', 'Nuevo trabajador', $gestionan],
+                ['personal.index', ['personal.*', 'register'], 'fa-id-badge', 'Personal', $gestionan],
+            ],
+            'Empresa' => [
+                ['hoteles.index', 'hoteles.*', 'fa-hotel', 'Hoteles', ['admin_empresa']],
+                ['recompensas.index', 'recompensas.*', 'fa-gift', 'Recompensas', ['admin_empresa']],
             ],
             'Plataforma' => [
-                ['plataforma', 'plataforma', 'fa-globe', 'Empresas', ['super_admin']],
+                ['plataforma', 'plataforma*', 'fa-globe', 'Empresas', ['super_admin']],
             ],
         ];
         $nav = array_filter(array_map(fn ($items) => array_filter($items, fn ($i) => $usuario->tieneRol(...$i[4])), $nav));

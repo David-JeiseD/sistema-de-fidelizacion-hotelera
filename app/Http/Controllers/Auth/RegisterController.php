@@ -60,7 +60,7 @@ class RegisterController extends Controller
 
         event(new Registered($user = $this->create($request->all())));
 
-        return redirect()->route('dashboard')->with('success', 'Trabajador registrado: ' . $user->rol_nombre . '.');
+        return redirect()->route('personal.index')->with('success', 'Trabajador registrado: ' . $user->rol_nombre . '.');
     }
 
     /**

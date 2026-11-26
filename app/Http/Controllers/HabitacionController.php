@@ -15,7 +15,7 @@ class HabitacionController extends Controller
     public function mostrarFormulario()
     {
         $hotel = Hotel::actual();
-        $habitaciones = Habitacion::where('hotel_id', $hotel->id)->orderBy('puntos')->get();
+        $habitaciones = Habitacion::where('hotel_id', $hotel->id)->where('activo', true)->orderBy('puntos')->get();
         $clientes = Cliente::with('persona')->get()->sortBy('nombre');
         return view('habitaciones.asignar', compact('habitaciones', 'clientes'));
     }
@@ -25,7 +25,7 @@ class HabitacionController extends Controller
         $hotel = Hotel::actual();
         $request->validate([
             'documento' => 'required|string|max:20',
-            'habitacion_id' => ['required', Rule::exists('habitaciones', 'id')->where('hotel_id', $hotel->id)],
+            'habitacion_id' => ['required', Rule::exists('habitaciones', 'id')->where('hotel_id', $hotel->id)->where('activo', true)],
         ]);
 
         $cliente = ClienteController::miembro($request->documento);

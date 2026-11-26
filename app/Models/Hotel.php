@@ -30,6 +30,11 @@ class Hotel extends Model
         return $this->belongsToMany(User::class);
     }
 
+    public function visitas()
+    {
+        return $this->hasMany(Visita::class);
+    }
+
     // Hoteles donde puede trabajar el usuario: todos los de su empresa (scope) si es admin; si no, solo los asignados.
     public function scopePermitidos(Builder $query): Builder
     {

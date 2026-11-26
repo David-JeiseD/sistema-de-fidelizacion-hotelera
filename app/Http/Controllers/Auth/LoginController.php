@@ -27,9 +27,9 @@ class LoginController extends Controller
         ]);
     }
 
-    // El DNI se suma a las credenciales: el usuario debe coincidir en email + DNI + contraseña.
+    // El DNI se suma a las credenciales (email + DNI + contraseña) y el usuario debe estar activo.
     protected function credentials(Request $request)
     {
-        return $request->only($this->username(), 'dni', 'password');
+        return $request->only($this->username(), 'dni', 'password') + ['activo' => true];
     }
 }

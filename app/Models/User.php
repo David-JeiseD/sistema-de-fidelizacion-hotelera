@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'dni',
         'rol',
+        'activo',
         'password',
     ];
 
@@ -34,7 +35,7 @@ class User extends Authenticatable
     ];
 
     // Mínimo privilegio por defecto: el rol se asigna explícitamente al registrar.
-    protected $attributes = ['rol' => 'recepcionista'];
+    protected $attributes = ['rol' => 'recepcionista', 'activo' => true];
 
     public function empresa()
     {
@@ -97,6 +98,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'activo' => 'boolean',
+            'empresa_id' => 'integer',
         ];
     }
 }

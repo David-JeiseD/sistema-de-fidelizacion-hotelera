@@ -23,6 +23,8 @@
             ['check_out', 'Check-out', 'time', 'fa-door-closed', '', false, ''],
         ],
     ];
+    $esAdmin = auth()->user()->esAdmin();
+    $deMarca = ['eslogan', 'ruc']; // de la empresa: solo el administrador los cambia
     $valor = fn ($campo) => old($campo, in_array($campo, ['check_in', 'check_out']) ? $hotel->hora($campo) : $hotel->{$campo});
 @endphp
 
@@ -47,7 +49,10 @@
         @foreach ($secciones as $titulo => $campos)
             <section class="panel panel-pad reveal d{{ min($loop->iteration, 4) }}">
                 <h2 class="panel-title mb-3"><span class="subtle serif me-2">{{ $loop->iteration }}.</span>{{ $titulo }}</h2>
-                @if ($loop->first)
+                @if ($loop->first && ! $esAdmin)
+                    <div class="note mb-4"><i class="fas fa-lock"></i><span>El logo, el nombre del club y el RUC son de la empresa y solo los cambia su administrador. Tú puedes editar los datos de este hotel.</span></div>
+                @endif
+                @if ($loop->first && $esAdmin)
                     <div class="uploader mb-4">
                         <span class="uploader-thumb round"><img src="{{ $hotel->logo_url }}" alt="Logo actual" id="logoPreview"></span>
                         <div style="min-width:0">
@@ -73,6 +78,7 @@
                                 <input type="{{ $tipo }}" id="{{ $campo }}" name="{{ $campo }}" value="{{ $valor($campo) }}" placeholder="{{ $ph }}"
                                        class="input @error($campo) is-invalid @enderror {{ in_array($campo, ['ruc', 'telefono']) ? 'num' : '' }}"
                                        data-preview="{{ $campo }}"
+                                       @if(! $esAdmin && in_array($campo, $deMarca)) disabled title="Solo el administrador de la empresa" @endif
                                        @if($campo === 'ruc') maxlength="11" inputmode="numeric" @endif
                                        @if($req) required @endif>
                             </div>
@@ -140,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     // Vista previa del logo antes de guardarlo
-    document.getElementById('logo').addEventListener('change', function () {
+    document.getElementById('logo')?.addEventListener('change', function () {
         const file = this.files[0];
         if (!file) return;
         if (file.size > 2 * 1024 * 1024) { showToast('El logo no puede pesar más de 2 MB.', 'warning', 'Archivo muy grande'); this.value = ''; return; }

@@ -32,6 +32,34 @@
             </div>
         @endforeach
 
+        <div class="field m-0" style="grid-column:1/-1">
+            <span class="field-label">Rol<span class="req">*</span></span>
+            <div class="methods">
+                @foreach ($roles as $codigo => $nombre)
+                    <label class="method">
+                        <input type="radio" name="rol" value="{{ $codigo }}" @checked(old('rol', array_key_last($roles)) === $codigo)>
+                        <span><i class="fas {{ ['admin_empresa' => 'fa-crown', 'gerente' => 'fa-user-tie', 'recepcionista' => 'fa-bell-concierge'][$codigo] }}"></i>{{ $nombre }}</span>
+                    </label>
+                @endforeach
+            </div>
+            <span class="field-hint" id="rolHint"></span>
+            @error('rol')<span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>@enderror
+        </div>
+
+        <div class="field m-0" style="grid-column:1/-1" id="campoHoteles">
+            <span class="field-label">Hoteles donde trabajará<span class="req">*</span></span>
+            <div class="methods">
+                @foreach ($hoteles as $h)
+                    <label class="method">
+                        <input type="checkbox" name="hoteles[]" value="{{ $h->id }}" @checked(in_array($h->id, old('hoteles', $hoteles->count() === 1 ? [$h->id] : [])))>
+                        <span><i class="fas fa-hotel"></i>{{ $h->nombre }}</span>
+                    </label>
+                @endforeach
+            </div>
+            @error('hoteles')<span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>@enderror
+            @error('hoteles.*')<span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>@enderror
+        </div>
+
         <div class="field m-0">
             <label for="password" class="field-label">Contraseña<span class="req">*</span></label>
             <div class="input-wrap">
@@ -54,4 +82,24 @@
         <button type="submit" class="btn-hv"><i class="fas fa-id-badge"></i>Crear acceso</button>
     </div>
 </form>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ayuda = {
+        admin_empresa: 'Administra toda la empresa: todos los hoteles, la marca, los QR y el personal.',
+        gerente: 'Gestiona sus hoteles: datos del local, QR y recepcionistas.',
+        recepcionista: 'Opera el día a día: huéspedes, habitaciones, canjes y cobros.',
+    };
+    const hoteles = document.getElementById('campoHoteles');
+    function actualizar() {
+        const rol = document.querySelector('input[name="rol"]:checked')?.value;
+        document.getElementById('rolHint').textContent = ayuda[rol] || '';
+        hoteles.hidden = rol === 'admin_empresa'; // el administrador ve todos los hoteles
+    }
+    document.querySelectorAll('input[name="rol"]').forEach(r => r.addEventListener('change', actualizar));
+    actualizar();
+});
+</script>
 @endsection

@@ -25,6 +25,7 @@ class UserFactory extends Factory
     {
         return [
             'empresa_id' => fn () => \App\Models\Hotel::actual()->empresa_id,
+            'rol' => 'admin_empresa', // los tests de roles lo cambian explícitamente
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'dni' => fake()->unique()->numerify('########'),

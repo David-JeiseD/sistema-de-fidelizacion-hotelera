@@ -40,6 +40,13 @@ class EstablecimientoController extends Controller
         $hotel = Hotel::actual();
         $empresa = $hotel->empresa;
 
+        // La marca la comparte toda la cadena: solo el administrador de la empresa la cambia.
+        if (! $request->user()->esAdmin()) {
+            unset($datos['eslogan'], $datos['ruc'], $datos['logo'], $datos['quitar_logo']);
+            $request->files->remove('logo');
+            $request->request->remove('quitar_logo');
+        }
+
         // La marca es de la empresa (la comparten todos sus hoteles); el resto es del local.
         $marca = [];
         if (array_key_exists('eslogan', $datos)) {

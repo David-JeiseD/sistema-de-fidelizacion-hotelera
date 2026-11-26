@@ -30,7 +30,8 @@ class FidelizacionTest extends TestCase
     public function test_registro_requiere_sesion_y_no_cambia_de_usuario(): void
     {
         $datos = ['name' => 'Nuevo', 'email' => 'nuevo@test.local', 'dni' => '87654321',
-                  'password' => 'secreto123', 'password_confirmation' => 'secreto123'];
+                  'password' => 'secreto123', 'password_confirmation' => 'secreto123',
+                  'rol' => 'recepcionista', 'hoteles' => [Hotel::actual()->id]];
 
         $this->post('/9ax1g9', $datos)->assertRedirect('/login');
         $this->assertDatabaseMissing('users', ['email' => 'nuevo@test.local']);

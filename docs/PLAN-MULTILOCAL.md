@@ -1,6 +1,6 @@
 # Plan: de un hotel a una plataforma multi-local
 
-> Estado: **fases 1 y 2 completadas (2026-11-26)**. Siguiente: fase 3 (roles y permisos).
+> Estado: **fases 1, 2 y 3 completadas (2026-11-26)**. Siguiente: fase 4 (pantallas de gestión: personal, hoteles y alta de empresas).
 
 ## 1. La idea central
 
@@ -46,6 +46,8 @@ Personas (globales, una sola vez en toda la plataforma)
 
 Quien tiene acceso a varios hoteles elige el **hotel activo** desde la barra lateral; todo lo que registra queda en ese hotel.
 
+**Cómo quedó (fase 3):** columna `users.rol` + tabla `hotel_user` (hoteles de gerentes y recepcionistas). Middleware `rol:` en `routes/web.php` (3 grupos: operación, gestión del hotel, plataforma) y `empresa.activa` (cierra la sesión si la empresa está suspendida). El menú se filtra con los mismos roles. El gerente edita los datos de su hotel pero no la marca (logo, club, RUC). Al registrar personal solo se pueden dar los roles y hoteles que uno mismo tiene. El super-admin va a `/plataforma` (solo lectura hasta la fase 4). Pruebas en `tests/Feature/RolesTest.php`.
+
 ## 4. Aislamiento de datos (lo más delicado)
 
 - Todas las tablas operativas llevan `empresa_id` (y `hotel_id` donde aplica).
@@ -76,7 +78,7 @@ Quien tiene acceso a varios hoteles elige el **hotel activo** desde la barra lat
 | **0. Decisiones** | Este documento cerrado | Reglas claras antes de tocar código |
 | **1. Modelo de datos** ✅ | Tablas `empresas`, columnas `empresa_id`/`hotel_id`, uniques compuestos, **migración de los datos actuales** a una empresa "Hotel Buena Vida" | La app funciona igual que hoy |
 | **2. Aislamiento** ✅ | Global scopes, hotel activo en sesión, tests de fuga | Dos empresas de prueba conviven sin verse |
-| **3. Roles** | Columna `rol`, políticas, menú según rol | Recepcionista ya no puede editar QR ni establecimiento |
+| **3. Roles** ✅ | Columna `rol`, políticas, menú según rol | Recepcionista ya no puede editar QR ni establecimiento |
 | **4. Pantallas de gestión** | Hoteles de la empresa, personal, selector de hotel, panel super-admin (empresas, plan, estado) | Puedes dar de alta un cliente nuevo sin tocar la base de datos |
 | **5. Reportes de cadena** | Panel consolidado vs. por hotel | El dueño ve toda su cadena |
 | **6. Opcional** | Subdominios (`sol.tuapp.com`), cobro de suscripción, vencimiento de puntos, auditoría | Producto listo para escalar |

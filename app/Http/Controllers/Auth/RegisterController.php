@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Hotel;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
@@ -44,13 +46,21 @@ class RegisterController extends Controller
     }
 
     // Igual que el trait, pero sin iniciar sesión como el usuario recién creado.
+    public function showRegistrationForm()
+    {
+        return view('auth.register', [
+            'roles' => array_intersect_key(User::ROLES, array_flip(auth()->user()->rolesAsignables())),
+            'hoteles' => Hotel::permitidos()->orderBy('nombre')->get(['id', 'nombre']),
+        ]);
+    }
+
     public function register(Request $request)
     {
         $this->validator($request->all())->validate();
 
         event(new Registered($user = $this->create($request->all())));
 
-        return redirect()->route('dashboard')->with('success', 'Trabajador registrado correctamente');
+        return redirect()->route('dashboard')->with('success', 'Trabajador registrado: ' . $user->rol_nombre . '.');
     }
 
     /**
@@ -66,6 +76,15 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'dni' => ['required', 'digits:8', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            // Solo roles que quien registra puede dar (un gerente no crea administradores)
+            'rol' => ['required', Rule::in(auth()->user()->rolesAsignables())],
+            // Gerentes y recepcionistas trabajan en hoteles concretos, entre los que quien registra tiene permitidos
+            'hoteles' => ['exclude_if:rol,admin_empresa', 'required', 'array', 'min:1'],
+            'hoteles.*' => ['integer', Rule::in(Hotel::permitidos()->pluck('id')->all())],
+        ], [
+            'rol.in' => 'No puedes asignar ese rol.',
+            'hoteles.required' => 'Elige al menos un hotel.',
+            'hoteles.*.in' => 'Uno de los hoteles no está disponible para ti.',
         ]);
     }
 
@@ -77,13 +96,19 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'empresa_id' => auth()->user()->empresa_id, // el personal nuevo entra a la empresa de quien lo registra
-            'rol' => 'recepcionista',
+            'rol' => $data['rol'],
             'name' => $data['name'],
             'email' => $data['email'],
             'dni' => $data['dni'],
             'password' => Hash::make($data['password']),
         ]);
+
+        if ($data['rol'] !== 'admin_empresa') {
+            $user->hoteles()->sync($data['hoteles']);
+        }
+
+        return $user;
     }
 }

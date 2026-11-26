@@ -16,33 +16,42 @@
 <body>
 @auth
     @php
+        $usuario = Auth::user();
+        $operan = ['admin_empresa', 'gerente', 'recepcionista'];
+        $gestionan = ['admin_empresa', 'gerente'];
+        // [ruta, patrón activo, ícono, texto, roles que la ven] — mismos roles que en routes/web.php
         $nav = [
             'Operaciones' => [
-                ['dashboard', 'dashboard', 'fa-compass', 'Panel'],
-                ['clientes.create', 'clientes.create', 'fa-user-plus', 'Registrar huésped'],
-                ['habitaciones.formulario', 'habitaciones.*', 'fa-key', 'Asignar habitación'],
-                ['clientes.puntos', ['clientes.puntos*', 'canjes.*'], 'fa-book-open', 'Libreta de puntos'],
-                ['cobrar', 'cobrar', 'fa-qrcode', 'Cobrar con QR'],
+                ['dashboard', 'dashboard', 'fa-compass', 'Panel', $operan],
+                ['clientes.create', 'clientes.create', 'fa-user-plus', 'Registrar huésped', $operan],
+                ['habitaciones.formulario', 'habitaciones.*', 'fa-key', 'Asignar habitación', $operan],
+                ['clientes.puntos', ['clientes.puntos*', 'canjes.*'], 'fa-book-open', 'Libreta de puntos', $operan],
+                ['cobrar', 'cobrar', 'fa-qrcode', 'Cobrar con QR', $operan],
             ],
             'Administración' => [
-                ['establecimiento.edit', 'establecimiento.*', 'fa-building', 'Establecimiento'],
-                ['metodos-pago.index', 'metodos-pago.*', 'fa-wallet', 'Métodos de pago'],
-                ['register', 'register', 'fa-id-badge', 'Nuevo trabajador'],
+                ['establecimiento.edit', 'establecimiento.*', 'fa-building', 'Establecimiento', $gestionan],
+                ['metodos-pago.index', 'metodos-pago.*', 'fa-wallet', 'Métodos de pago', $gestionan],
+                ['register', 'register', 'fa-id-badge', 'Nuevo trabajador', $gestionan],
+            ],
+            'Plataforma' => [
+                ['plataforma', 'plataforma', 'fa-globe', 'Empresas', ['super_admin']],
             ],
         ];
+        $nav = array_filter(array_map(fn ($items) => array_filter($items, fn ($i) => $usuario->tieneRol(...$i[4])), $nav));
         $iniciales = collect(explode(' ', trim(Auth::user()->name)))->filter()->take(2)->map(fn ($p) => mb_strtoupper(mb_substr($p, 0, 1)))->join('');
     @endphp
     <div class="shell">
         <aside class="sidebar" aria-label="Navegación principal">
-            <a class="brand" href="{{ route('dashboard') }}">
-                <span class="brand-seal"><img src="{{ $hotel->logo_url }}" alt=""></span>
+            <a class="brand" href="{{ route($usuario->esSuperAdmin() ? 'plataforma' : 'dashboard') }}">
+                <span class="brand-seal"><img src="{{ $usuario->esSuperAdmin() ? asset('images/logo.jpg') : $hotel->logo_url }}" alt=""></span>
                 <span>
-                    <span class="brand-name d-block">{{ $hotel->nombre_corto }}</span>
-                    <span class="brand-sub d-block">{{ $hotel->eslogan }}</span>
+                    <span class="brand-name d-block">{{ $usuario->esSuperAdmin() ? 'Plataforma' : $hotel->nombre_corto }}</span>
+                    <span class="brand-sub d-block">{{ $usuario->esSuperAdmin() ? 'Fidelización hotelera' : $hotel->eslogan }}</span>
                 </span>
             </a>
 
-            @php $hotelesEmpresa = \App\Models\Hotel::orderBy('nombre')->get(['id', 'nombre']); @endphp
+            @unless ($usuario->esSuperAdmin())
+            @php $hotelesEmpresa = \App\Models\Hotel::permitidos()->orderBy('nombre')->get(['id', 'nombre']); @endphp
             <div class="hotel-switch">
                 <span class="nav-label p-0">Trabajando en</span>
                 @if ($hotelesEmpresa->count() > 1)
@@ -60,6 +69,7 @@
                     <b title="{{ $hotel->nombre }}">{{ $hotel->nombre }}</b>
                 @endif
             </div>
+            @endunless
 
             @foreach ($nav as $grupo => $items)
                 <nav class="nav-group">
@@ -77,7 +87,7 @@
                 <span class="avatar" aria-hidden="true">{{ $iniciales }}</span>
                 <div class="user-meta" style="min-width:0">
                     <div class="user-name text-truncate">{{ Auth::user()->name }}</div>
-                    <div class="user-role">Recepción</div>
+                    <div class="user-role">{{ $usuario->rol_nombre }}</div>
                 </div>
                 <form action="{{ route('logout') }}" method="POST" class="ms-auto">
                     @csrf

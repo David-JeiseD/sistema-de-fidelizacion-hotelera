@@ -9,6 +9,7 @@ use App\Http\Controllers\VisitaController;
 use App\Http\Controllers\CanjeController;
 use App\Http\Controllers\RecompensaController;
 use App\Http\Controllers\EstablecimientoController;
+use App\Http\Controllers\MetodoPagoController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -56,6 +57,12 @@ Route::middleware(['auth'])->group(function () {
     // Establecimiento
     Route::get('/establecimiento', [EstablecimientoController::class, 'edit'])->name('establecimiento.edit');
     Route::put('/establecimiento', [EstablecimientoController::class, 'update'])->name('establecimiento.update');
+
+    // Pagos con QR
+    Route::get('/cobrar', [MetodoPagoController::class, 'cobrar'])->name('cobrar');
+    Route::resource('metodos-pago', MetodoPagoController::class)
+        ->except('show')
+        ->parameters(['metodos-pago' => 'metodo']);
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

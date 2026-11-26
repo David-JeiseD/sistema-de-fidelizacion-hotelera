@@ -9,7 +9,7 @@ class Establecimiento extends Model
     protected $table = 'establecimiento';
 
     protected $fillable = [
-        'nombre', 'eslogan', 'ruc', 'direccion', 'ciudad',
+        'nombre', 'eslogan', 'logo_path', 'ruc', 'direccion', 'ciudad',
         'telefono', 'email', 'sitio_web', 'check_in', 'check_out',
     ];
 
@@ -18,6 +18,12 @@ class Establecimiento extends Model
     {
         return static::query()->first()
             ?? static::create(['nombre' => 'Hotel Buena Vida', 'eslogan' => 'Club de huéspedes']);
+    }
+
+    // Logo subido por el local, o el logo original del proyecto si no hay uno.
+    public function getLogoUrlAttribute(): string
+    {
+        return $this->logo_path ? asset('storage/' . $this->logo_path) : asset('images/logo.jpg');
     }
 
     // "Hotel Buena Vida" -> "Buena Vida", para la barra lateral y la tarjeta.

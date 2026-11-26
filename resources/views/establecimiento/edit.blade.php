@@ -39,7 +39,7 @@
     </span>
 </header>
 
-<form method="POST" action="{{ route('establecimiento.update') }}" class="split" id="hotelForm" novalidate>
+<form method="POST" action="{{ route('establecimiento.update') }}" class="split" id="hotelForm" enctype="multipart/form-data" novalidate>
     @csrf
     @method('PUT')
 
@@ -47,6 +47,23 @@
         @foreach ($secciones as $titulo => $campos)
             <section class="panel panel-pad reveal d{{ min($loop->iteration, 4) }}">
                 <h2 class="panel-title mb-3"><span class="subtle serif me-2">{{ $loop->iteration }}.</span>{{ $titulo }}</h2>
+                @if ($loop->first)
+                    <div class="uploader mb-4">
+                        <span class="uploader-thumb round"><img src="{{ $hotel->logo_url }}" alt="Logo actual" id="logoPreview"></span>
+                        <div style="min-width:0">
+                            <label class="field-label d-block" for="logo">Logo</label>
+                            <p class="field-hint mb-2">JPG, PNG o WEBP de hasta 2 MB. Se ve mejor cuadrado.</p>
+                            <div class="d-flex gap-2 flex-wrap align-items-center">
+                                <label class="btn-hv btn-ghost btn-sm mb-0" for="logo"><i class="fas fa-upload"></i>Subir logo</label>
+                                <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp" class="visually-hidden">
+                                @if ($hotel->logo_path)
+                                    <label class="check" style="font-size:13px"><input type="checkbox" name="quitar_logo" value="1" id="quitarLogo"> Volver al logo original</label>
+                                @endif
+                            </div>
+                            @error('logo')<span class="field-error mt-2"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>@enderror
+                        </div>
+                    </div>
+                @endif
                 <div class="grid grid-2" style="gap:18px">
                     @foreach ($campos as [$campo, $label, $tipo, $icono, $ph, $req, $ancho])
                         <div class="field m-0" @if($ancho === 'full') style="grid-column:1/-1" @endif>
@@ -72,7 +89,7 @@
         <div class="stub">
             @include('partials.rings', ['class' => 'hero-rings'])
             <div class="d-flex align-items-center gap-3 position-relative">
-                <span class="brand-seal"><img src="{{ asset('images/logo.jpg') }}" alt=""></span>
+                <span class="brand-seal"><img src="{{ $hotel->logo_url }}" alt="" data-out-logo></span>
                 <div style="min-width:0">
                     <h2 class="text-truncate" data-out="nombre">{{ $hotel->nombre }}</h2>
                     <div class="brand-sub" data-out="eslogan">{{ $hotel->eslogan }}</div>
@@ -121,6 +138,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 out(this.id).textContent = v || (this.id === 'nombre' ? 'Nombre del hotel' : this.id === 'eslogan' ? '' : '—');
             }
         });
+    });
+    // Vista previa del logo antes de guardarlo
+    document.getElementById('logo').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { showToast('El logo no puede pesar más de 2 MB.', 'warning', 'Archivo muy grande'); this.value = ''; return; }
+        const url = URL.createObjectURL(file);
+        document.getElementById('logoPreview').src = url;
+        document.querySelector('[data-out-logo]').src = url;
+        const quitar = document.getElementById('quitarLogo');
+        if (quitar) quitar.checked = false;
     });
     document.getElementById('hotelForm').addEventListener('submit', function () {
         const btn = document.getElementById('guardarBtn');

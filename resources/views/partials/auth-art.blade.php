@@ -1,6 +1,6 @@
 <section class="auth-art" aria-hidden="true">
     <div class="brand">
-        <span class="brand-seal"><img src="{{ asset('images/logo.jpg') }}" alt=""></span>
+        <span class="brand-seal"><img src="{{ $hotel->logo_url }}" alt=""></span>
         <span>
             <span class="brand-name d-block">{{ $hotel->nombre }}</span>
             <span class="brand-sub d-block">{{ $hotel->eslogan }}</span>

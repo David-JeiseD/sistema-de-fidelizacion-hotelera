@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#1f3d36">
     <title>@hasSection('title')@yield('title') · @endif {{ $hotel->nombre }}</title>
-    <link rel="icon" href="{{ asset('images/logo.jpg') }}">
+    <link rel="icon" href="{{ $hotel->logo_url }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=fraunces:400,400i,500,500i,600|manrope:400,500,600,700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,9 +22,11 @@
                 ['clientes.create', 'clientes.create', 'fa-user-plus', 'Registrar huésped'],
                 ['habitaciones.formulario', 'habitaciones.*', 'fa-key', 'Asignar habitación'],
                 ['clientes.puntos', ['clientes.puntos*', 'canjes.*'], 'fa-book-open', 'Libreta de puntos'],
+                ['cobrar', 'cobrar', 'fa-qrcode', 'Cobrar con QR'],
             ],
             'Administración' => [
                 ['establecimiento.edit', 'establecimiento.*', 'fa-building', 'Establecimiento'],
+                ['metodos-pago.index', 'metodos-pago.*', 'fa-wallet', 'Métodos de pago'],
                 ['register', 'register', 'fa-id-badge', 'Nuevo trabajador'],
             ],
         ];
@@ -33,7 +35,7 @@
     <div class="shell">
         <aside class="sidebar" aria-label="Navegación principal">
             <a class="brand" href="{{ route('dashboard') }}">
-                <span class="brand-seal"><img src="{{ asset('images/logo.jpg') }}" alt=""></span>
+                <span class="brand-seal"><img src="{{ $hotel->logo_url }}" alt=""></span>
                 <span>
                     <span class="brand-name d-block">{{ $hotel->nombre_corto }}</span>
                     <span class="brand-sub d-block">{{ $hotel->eslogan }}</span>

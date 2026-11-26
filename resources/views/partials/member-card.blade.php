@@ -1,7 +1,7 @@
 {{-- Tarjeta de membresía. Variables: $nombre, $dni, $puntos, $desde (texto) --}}
 <div class="card-stage">
     <div class="member-card" data-tilt role="img" aria-label="Tarjeta de membresía de {{ $nombre }}: {{ $puntos }} puntos">
-        <img class="mc-watermark" src="{{ asset('images/logo.jpg') }}" alt="">
+        <img class="mc-watermark" src="{{ $hotel->logo_url }}" alt="">
         <div class="mc-top">
             <div class="mc-brand">{{ $hotel->nombre_corto }}<small>{{ $hotel->eslogan ?: 'Club de huéspedes' }}</small></div>
             <span class="mc-chip"></span>

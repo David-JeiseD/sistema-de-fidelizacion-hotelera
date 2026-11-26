@@ -15,7 +15,7 @@
         <span class="action-icon"><i class="fas fa-user-plus"></i></span>
         <div>
             <h3>Registrar huésped</h3>
-            <p class="mt-1">Da de alta a un nuevo miembro del club con su DNI.</p>
+            <p class="mt-1">Inscribe a un huésped en el club con su DNI, CE o pasaporte.</p>
         </div>
         <span class="action-go">Nuevo registro <i class="fas fa-arrow-right"></i></span>
     </a>

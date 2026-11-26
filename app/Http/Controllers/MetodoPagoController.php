@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Establecimiento;
+use App\Models\Hotel;
 use App\Models\MetodoPago;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -11,7 +11,8 @@ class MetodoPagoController extends Controller
 {
     public function index()
     {
-        return view('metodos-pago.index', ['metodos' => MetodoPago::orderByDesc('activo')->orderBy('nombre')->get()]);
+        $metodos = MetodoPago::where('hotel_id', Hotel::actual()->id)->orderByDesc('activo')->orderBy('nombre')->get();
+        return view('metodos-pago.index', compact('metodos'));
     }
 
     public function create()
@@ -23,6 +24,7 @@ class MetodoPagoController extends Controller
     {
         $datos = $this->validar($request, qrObligatorio: true);
         $datos['qr_path'] = $request->file('qr')->store('qr', 'public');
+        $datos['hotel_id'] = Hotel::actual()->id;
 
         MetodoPago::create($datos);
 
@@ -31,11 +33,13 @@ class MetodoPagoController extends Controller
 
     public function edit(MetodoPago $metodo)
     {
+        $this->delHotel($metodo);
         return view('metodos-pago.form', compact('metodo'));
     }
 
     public function update(Request $request, MetodoPago $metodo)
     {
+        $this->delHotel($metodo);
         $datos = $this->validar($request, qrObligatorio: false);
 
         if ($request->hasFile('qr')) {
@@ -50,6 +54,7 @@ class MetodoPagoController extends Controller
 
     public function destroy(MetodoPago $metodo)
     {
+        $this->delHotel($metodo);
         Storage::disk('public')->delete($metodo->qr_path);
         $metodo->delete();
 
@@ -60,9 +65,15 @@ class MetodoPagoController extends Controller
     public function cobrar()
     {
         return view('metodos-pago.cobrar', [
-            'metodos' => MetodoPago::activos()->orderBy('nombre')->get(),
-            'hotel' => Establecimiento::actual(),
+            'metodos' => MetodoPago::activos()->where('hotel_id', Hotel::actual()->id)->orderBy('nombre')->get(),
+            'hotel' => Hotel::actual(),
         ]);
+    }
+
+    // Un hotel no puede ver ni tocar los métodos de otro (404 en vez de 403 para no revelar que existe).
+    private function delHotel(MetodoPago $metodo): void
+    {
+        abort_unless((int) $metodo->hotel_id === Hotel::actual()->id, 404);
     }
 
     private function validar(Request $request, bool $qrObligatorio): array

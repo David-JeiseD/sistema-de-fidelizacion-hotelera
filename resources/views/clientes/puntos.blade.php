@@ -28,7 +28,7 @@
     </div>
     <div class="d-flex gap-2 flex-wrap">
         <a href="{{ route('clientes.puntos') }}" class="btn-hv btn-ghost"><i class="fas fa-magnifying-glass"></i>Otra consulta</a>
-        <a href="{{ route('habitaciones.formulario', ['dni' => $cliente->dni]) }}" class="btn-hv btn-ghost"><i class="fas fa-key"></i>Asignar habitación</a>
+        <a href="{{ route('habitaciones.formulario', ['documento' => $cliente->dni]) }}" class="btn-hv btn-ghost"><i class="fas fa-key"></i>Asignar habitación</a>
     </div>
 </header>
 
@@ -37,6 +37,7 @@
         @include('partials.member-card', [
             'nombre' => $cliente->nombre,
             'dni' => $cliente->dni,
+            'tipo' => $cliente->tipo_documento,
             'puntos' => $total_puntos,
             'desde' => $cliente->created_at?->format('m/Y') ?? '—',
         ])

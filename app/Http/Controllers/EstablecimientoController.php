@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Establecimiento;
+use App\Models\Hotel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,7 +10,7 @@ class EstablecimientoController extends Controller
 {
     public function edit()
     {
-        return view('establecimiento.edit', ['hotel' => Establecimiento::actual()]);
+        return view('establecimiento.edit', ['hotel' => Hotel::actual()]);
     }
 
     public function update(Request $request)
@@ -37,16 +37,26 @@ class EstablecimientoController extends Controller
             'logo.max' => 'El logo no puede pesar más de 2 MB.',
         ]);
 
-        $hotel = Establecimiento::actual();
-        unset($datos['logo'], $datos['quitar_logo']);
+        $hotel = Hotel::actual();
+        $empresa = $hotel->empresa;
 
-        if ($request->hasFile('logo') || $request->boolean('quitar_logo')) {
-            if ($hotel->logo_path) {
-                Storage::disk('public')->delete($hotel->logo_path);
-            }
-            $datos['logo_path'] = $request->hasFile('logo') ? $request->file('logo')->store('logos', 'public') : null;
+        // La marca es de la empresa (la comparten todos sus hoteles); el resto es del local.
+        $marca = [];
+        if (array_key_exists('eslogan', $datos)) {
+            $marca['nombre_club'] = $datos['eslogan'] ?: 'Club de huéspedes';
         }
+        if (array_key_exists('ruc', $datos)) {
+            $marca['ruc'] = $datos['ruc'];
+        }
+        if ($request->hasFile('logo') || $request->boolean('quitar_logo')) {
+            if ($empresa->logo_path) {
+                Storage::disk('public')->delete($empresa->logo_path);
+            }
+            $marca['logo_path'] = $request->hasFile('logo') ? $request->file('logo')->store('logos', 'public') : null;
+        }
+        $empresa->update($marca);
 
+        unset($datos['logo'], $datos['quitar_logo'], $datos['eslogan'], $datos['ruc']);
         $hotel->update($datos);
 
         return redirect()->route('establecimiento.edit')->with('success', 'Datos del establecimiento guardados.');

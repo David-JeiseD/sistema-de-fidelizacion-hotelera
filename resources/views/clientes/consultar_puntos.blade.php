@@ -16,16 +16,16 @@
     <section class="panel reveal d1">
         <form method="POST" action="{{ route('clientes.puntos.consultar') }}" id="consultarForm" class="search-hero" novalidate>
             @csrf
-            <label for="dni" class="field-label d-block mb-2">DNI o nombre</label>
+            <label for="documento" class="field-label d-block mb-2">Documento o nombre</label>
             <div class="d-flex gap-2 flex-wrap">
                 <div class="input-wrap flex-grow-1">
                     <i class="fas fa-magnifying-glass"></i>
-                    <input name="dni" id="dni" value="{{ old('dni', request('dni')) }}" autocomplete="off" required
-                           class="input input-lg @error('dni') is-invalid @enderror" placeholder="Ej. 76799754 o “María”">
+                    <input name="documento" id="documento" value="{{ old('documento', request('documento')) }}" autocomplete="off" required
+                           class="input input-lg @error('documento') is-invalid @enderror" placeholder="Ej. 76799754 o “María”">
                 </div>
                 <button type="submit" class="btn-hv btn-lg" id="consultarBtn">Abrir libreta</button>
             </div>
-            @error('dni')
+            @error('documento')
                 <span class="field-error mt-2"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>
             @else
                 <span class="field-hint d-block mt-2" id="searchHint" aria-live="polite">Filtra la lista mientras escribes o pulsa un huésped para abrir su libreta.</span>
@@ -47,7 +47,7 @@
                             <span class="avatar" aria-hidden="true">{{ $ini }}</span>
                             <span style="min-width:0">
                                 <span class="d-name d-block text-truncate">{{ $c->nombre }}</span>
-                                <span class="d-dni d-block">DNI {{ $c->dni }}</span>
+                                <span class="d-dni d-block">{{ $c->tipo_documento }} {{ $c->dni }}</span>
                             </span>
                             <span class="go">Abrir <i class="fas fa-arrow-right"></i></span>
                         </button>
@@ -81,7 +81,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('consultarForm');
-    const input = document.getElementById('dni');
+    const input = document.getElementById('documento');
     const items = [...document.querySelectorAll('#directory li')];
     const pill = document.getElementById('countPill');
     const none = document.getElementById('noResults');
@@ -102,10 +102,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (none) none.classList.toggle('d-none', n > 0);
     });
 
-    // Si escriben un nombre, se abre el único resultado en vez de enviar texto como DNI
+    // Si escriben un nombre, se abre el único resultado en vez de enviar el texto como documento
     form.addEventListener('submit', function (e) {
         const visibles = items.filter(li => !li.hidden);
-        if (!/^\d+$/.test(input.value.trim()) && visibles.length === 1) {
+        if (visibles.length === 1 && !visibles[0].querySelector('button').dataset.dni.includes(input.value.trim().toUpperCase())) {
             e.preventDefault();
             abrir(visibles[0].querySelector('button').dataset.dni);
         }

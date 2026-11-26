@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Establecimiento;
+use App\Models\Hotel;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -32,10 +32,12 @@ class EstablecimientoTest extends TestCase
             'check_out' => '11:30',
         ])->assertRedirect(route('establecimiento.edit'))->assertSessionHas('success');
 
-        $hotel = Establecimiento::actual();
+        $hotel = Hotel::actual();
         $this->assertSame('Hotel Sol de Cusco', $hotel->nombre);
         $this->assertSame('15:00', $hotel->hora('check_in'));
-        $this->assertSame(1, Establecimiento::count());
+        $this->assertSame(1, Hotel::count());
+        $this->assertSame('Huéspedes de siempre', $hotel->empresa->nombre_club);
+        $this->assertSame('20123456789', $hotel->empresa->ruc);
 
         $this->get('/dashboard')->assertSee('Sol de Cusco')->assertSee('Huéspedes de siempre');
     }
@@ -53,6 +55,6 @@ class EstablecimientoTest extends TestCase
             'check_in' => '25:00',
         ])->assertSessionHasErrors(['nombre', 'ruc', 'telefono', 'email', 'sitio_web', 'check_in']);
 
-        $this->assertSame('Hotel Buena Vida', Establecimiento::actual()->nombre);
+        $this->assertSame('Hotel Buena Vida', Hotel::actual()->nombre);
     }
 }

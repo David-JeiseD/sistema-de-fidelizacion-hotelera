@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Habitacion extends Model {
     use HasFactory;
     protected $table = 'habitaciones'; 
-    protected $fillable = ['nombre', 'puntos'];
+    protected $fillable = ['hotel_id', 'nombre', 'puntos'];
+
+    public function hotel() {
+        return $this->belongsTo(Hotel::class);
+    }
+
 }

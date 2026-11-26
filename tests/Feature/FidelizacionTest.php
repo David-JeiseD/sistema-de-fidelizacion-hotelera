@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Canje;
 use App\Models\Cliente;
 use App\Models\Habitacion;
+use App\Models\Hotel;
 use App\Models\Recompensa;
 use App\Models\User;
 use App\Models\Visita;
@@ -53,8 +54,8 @@ class FidelizacionTest extends TestCase
     public function test_dni_de_cliente_debe_tener_8_digitos(): void
     {
         $this->actingAs(User::factory()->create())
-            ->post('/clientes/store', ['nombre' => 'X', 'dni' => 'ab'])
-            ->assertSessionHasErrors('dni');
+            ->post('/clientes/store', ['nombre' => 'X', 'tipo_documento' => 'DNI', 'numero_documento' => 'ab'])
+            ->assertSessionHasErrors('numero_documento');
 
         $this->assertDatabaseCount('clientes', 0);
     }
@@ -62,21 +63,21 @@ class FidelizacionTest extends TestCase
     public function test_consultar_dni_inexistente_muestra_error_y_no_404(): void
     {
         $this->actingAs(User::factory()->create())
-            ->post('/clientes/puntos', ['dni' => '00000000'])
-            ->assertSessionHasErrors('dni');
+            ->post('/clientes/puntos', ['documento' => '00000000'])
+            ->assertSessionHasErrors('documento');
     }
 
     public function test_asignar_habitacion_valida_y_limita_una_por_dia(): void
     {
         $this->actingAs(User::factory()->create());
-        $cliente = Cliente::create(['nombre' => 'Ana', 'dni' => '22222222']);
-        $hab = Habitacion::create(['nombre' => 'Doble', 'puntos' => 110]);
+        $cliente = $this->miembro('22222222');
+        $hab = Habitacion::create(['hotel_id' => Hotel::actual()->id, 'nombre' => 'Doble', 'puntos' => 110]);
 
-        $this->post('/habitaciones/asignar', ['dni' => '00000000', 'habitacion_id' => $hab->id])
-            ->assertSessionHasErrors('dni');
+        $this->post('/habitaciones/asignar', ['documento' => '00000000', 'habitacion_id' => $hab->id])
+            ->assertSessionHasErrors('documento');
 
-        $this->post('/habitaciones/asignar', ['dni' => '22222222', 'habitacion_id' => $hab->id]);
-        $this->post('/habitaciones/asignar', ['dni' => '22222222', 'habitacion_id' => $hab->id])
+        $this->post('/habitaciones/asignar', ['documento' => '22222222', 'habitacion_id' => $hab->id]);
+        $this->post('/habitaciones/asignar', ['documento' => '22222222', 'habitacion_id' => $hab->id])
             ->assertSessionHas('error');
 
         $this->assertSame(1, Visita::where('cliente_id', $cliente->id)->count());
@@ -86,10 +87,10 @@ class FidelizacionTest extends TestCase
     public function test_canje_descuenta_y_rechaza_si_no_alcanzan_los_puntos(): void
     {
         $this->actingAs(User::factory()->create());
-        $cliente = Cliente::create(['nombre' => 'Ana', 'dni' => '22222222']);
-        $hab = Habitacion::create(['nombre' => 'Doble', 'puntos' => 110]);
-        Visita::create(['cliente_id' => $cliente->id, 'habitacion_id' => $hab->id, 'puntos' => 110, 'fecha' => now()]);
-        $jarra = Recompensa::create(['nombre' => 'Jarra', 'puntos' => 90]);
+        $cliente = $this->miembro('22222222');
+        $hab = Habitacion::create(['hotel_id' => Hotel::actual()->id, 'nombre' => 'Doble', 'puntos' => 110]);
+        Visita::create(['hotel_id' => Hotel::actual()->id, 'cliente_id' => $cliente->id, 'habitacion_id' => $hab->id, 'puntos' => 110, 'fecha' => now()]);
+        $jarra = Recompensa::create(['empresa_id' => Hotel::actual()->empresa_id, 'nombre' => 'Jarra', 'puntos' => 90]);
 
         $datos = ['cliente_id' => $cliente->id, 'recompensa_id' => $jarra->id];
         $this->post('/canjes/realizar', $datos)->assertSessionHas('success');

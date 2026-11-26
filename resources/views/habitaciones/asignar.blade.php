@@ -13,7 +13,7 @@
             default => 'fa-bed',
         };
     };
-    $dniInicial = old('dni', request('dni'));
+    $dniInicial = old('documento', request('documento'));
 @endphp
 
 @section('content')
@@ -32,18 +32,18 @@
         <section class="panel panel-pad reveal d1">
             <h2 class="panel-title mb-3"><span class="subtle serif me-2">1.</span>Huésped</h2>
             <div class="field">
-                <label for="dni" class="field-label">DNI del huésped<span class="req">*</span></label>
+                <label for="documento" class="field-label">Documento del huésped<span class="req">*</span></label>
                 <div class="input-wrap">
                     <i class="fas fa-id-card"></i>
-                    <input type="text" name="dni" id="dni" list="dnis" value="{{ $dniInicial }}" maxlength="8" inputmode="numeric"
-                           class="input input-lg num @error('dni') is-invalid @enderror" placeholder="Escribe o elige un DNI" autocomplete="off" required>
+                    <input type="text" name="documento" id="documento" list="dnis" value="{{ $dniInicial }}" maxlength="20"
+                           class="input input-lg num @error('documento') is-invalid @enderror" placeholder="DNI, CE o pasaporte" autocomplete="off" required>
                     <datalist id="dnis">
                         @foreach ($clientes as $c)
                             <option value="{{ $c->dni }}">{{ $c->nombre }}</option>
                         @endforeach
                     </datalist>
                 </div>
-                @error('dni')
+                @error('documento')
                     <span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>
                 @else
                     <span class="field-hint" id="guestHint" aria-live="polite">Empieza a escribir para buscar entre {{ $clientes->count() }} huéspedes.</span>
@@ -82,7 +82,7 @@
             <h2 class="panel-title mt-2" id="passGuest">Huésped por confirmar</h2>
         </div>
         <div class="pass-body">
-            <div class="pass-row"><span>DNI</span><b class="num" id="passDni">—</b></div>
+            <div class="pass-row"><span>Documento</span><b class="num" id="passDni">—</b></div>
             <div class="pass-row"><span>Habitación</span><b id="passRoom">—</b></div>
             <div class="pass-row"><span>Fecha</span><b id="passDate">{{ now()->format('d/m/Y') }}</b></div>
             <div class="pass-points">
@@ -102,26 +102,26 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const huespedes = @json($clientes->pluck('nombre', 'dni'));
-    const dni = document.getElementById('dni');
+    const dni = document.getElementById('documento');
     const hint = document.getElementById('guestHint');
     const btn = document.getElementById('asignarBtn');
     const $ = id => document.getElementById(id);
     document.getElementById('passDate').textContent = new Date().toLocaleDateString('es-PE');
 
     function actualizar() {
-        dni.value = dni.value.replace(/\D/g, '').slice(0, 8);
+        dni.value = dni.value.replace(/[\s.-]/g, '').toUpperCase().slice(0, 20);
         const nombre = huespedes[dni.value];
         const room = document.querySelector('input[name="habitacion_id"]:checked');
 
         $('passDni').textContent = dni.value || '—';
         $('passGuest').textContent = nombre || 'Huésped por confirmar';
         dni.classList.toggle('is-valid', !!nombre);
-        dni.classList.toggle('is-invalid', dni.value.length === 8 && !nombre);
+        dni.classList.toggle('is-invalid', dni.value.length >= 8 && !nombre);
         if (hint) {
-            hint.className = 'field-hint' + (nombre ? ' guest-found' : dni.value.length === 8 ? ' guest-missing' : '');
+            hint.className = 'field-hint' + (nombre ? ' guest-found' : dni.value.length >= 8 ? ' guest-missing' : '');
             hint.textContent = nombre
                 ? '✓ ' + nombre
-                : dni.value.length === 8 ? 'No hay ningún huésped con ese DNI.' : 'Escribe los 8 dígitos del DNI.';
+                : dni.value.length >= 8 ? 'No hay ningún miembro del club con ese documento.' : 'Escribe el número de documento.';
         }
 
         $('passRoom').textContent = room ? room.dataset.nombre : '—';

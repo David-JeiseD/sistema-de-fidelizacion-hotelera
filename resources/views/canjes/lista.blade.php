@@ -29,7 +29,7 @@
     </div>
     <form method="POST" action="{{ route('clientes.puntos.consultar') }}">
         @csrf
-        <input type="hidden" name="dni" value="{{ $cliente->dni }}">
+        <input type="hidden" name="documento" value="{{ $cliente->dni }}">
         <button class="btn-hv btn-ghost"><i class="fas fa-arrow-left"></i>Volver a la libreta</button>
     </form>
 </header>
@@ -38,7 +38,7 @@
     <span class="avatar" aria-hidden="true">{{ $ini }}</span>
     <div style="min-width:0">
         <div class="fw-bold text-truncate">{{ $cliente->nombre }}</div>
-        <div class="subtle num text-nowrap" style="font-size:13px">DNI {{ $cliente->dni }}</div>
+        <div class="subtle num text-nowrap" style="font-size:13px">{{ $cliente->tipo_documento }} {{ $cliente->dni }}</div>
     </div>
     <div class="pts">
         <b>{{ number_format($puntos, 0, ',', '.') }}</b>

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Establecimiento;
+use App\Models\Hotel;
 use App\Models\MetodoPago;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -58,7 +58,7 @@ class MetodoPagoTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
         $viejo = UploadedFile::fake()->image('a.png')->store('qr', 'public');
-        $m = MetodoPago::create(['nombre' => 'Yape', 'numero' => '984', 'qr_path' => $viejo, 'activo' => true]);
+        $m = MetodoPago::create(['hotel_id' => Hotel::actual()->id, 'nombre' => 'Yape', 'numero' => '984', 'qr_path' => $viejo, 'activo' => true]);
 
         $this->put("/metodos-pago/{$m->id}", ['nombre' => 'Yape', 'numero' => '984', 'qr' => UploadedFile::fake()->image('b.png')]);
         Storage::disk('public')->assertMissing($viejo);
@@ -74,8 +74,8 @@ class MetodoPagoTest extends TestCase
     public function test_pantalla_de_cobro_solo_muestra_metodos_activos(): void
     {
         $this->actingAs(User::factory()->create());
-        MetodoPago::create(['nombre' => 'Yape', 'numero' => '111', 'qr_path' => 'qr/a.png', 'activo' => true]);
-        MetodoPago::create(['nombre' => 'Plin', 'numero' => '222', 'qr_path' => 'qr/b.png', 'activo' => false]);
+        MetodoPago::create(['hotel_id' => Hotel::actual()->id, 'nombre' => 'Yape', 'numero' => '111', 'qr_path' => 'qr/a.png', 'activo' => true]);
+        MetodoPago::create(['hotel_id' => Hotel::actual()->id, 'nombre' => 'Plin', 'numero' => '222', 'qr_path' => 'qr/b.png', 'activo' => false]);
 
         $this->get('/cobrar')->assertOk()->assertSee('Yape')->assertDontSee('Plin');
     }
@@ -85,12 +85,12 @@ class MetodoPagoTest extends TestCase
         $this->actingAs(User::factory()->create());
 
         $this->put('/establecimiento', ['nombre' => 'Hotel Buena Vida', 'logo' => UploadedFile::fake()->image('logo.png')]);
-        $logo = Establecimiento::actual()->logo_path;
+        $logo = Hotel::actual()->empresa->logo_path;
         Storage::disk('public')->assertExists($logo);
         $this->get('/dashboard')->assertSee('storage/' . $logo);
 
         $this->put('/establecimiento', ['nombre' => 'Hotel Buena Vida', 'quitar_logo' => '1']);
         Storage::disk('public')->assertMissing($logo);
-        $this->assertNull(Establecimiento::actual()->logo_path);
+        $this->assertNull(Hotel::actual()->empresa->logo_path);
     }
 }

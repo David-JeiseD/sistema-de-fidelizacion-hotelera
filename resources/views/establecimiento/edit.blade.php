@@ -56,7 +56,7 @@
                             <div class="d-flex gap-2 flex-wrap align-items-center">
                                 <label class="btn-hv btn-ghost btn-sm mb-0" for="logo"><i class="fas fa-upload"></i>Subir logo</label>
                                 <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp" class="visually-hidden">
-                                @if ($hotel->logo_path)
+                                @if ($hotel->empresa->logo_path)
                                     <label class="check" style="font-size:13px"><input type="checkbox" name="quitar_logo" value="1" id="quitarLogo"> Volver al logo original</label>
                                 @endif
                             </div>

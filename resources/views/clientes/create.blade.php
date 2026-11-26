@@ -29,17 +29,25 @@
         </div>
 
         <div class="field">
-            <label for="dni" class="field-label">DNI<span class="req">*</span></label>
-            <div class="input-wrap">
-                <i class="fas fa-id-card"></i>
-                <input type="text" id="dni" name="dni" value="{{ old('dni') }}" maxlength="8" inputmode="numeric" pattern="[0-9]{8}"
-                       class="input num @error('dni') is-invalid @enderror" placeholder="8 dígitos" required>
+            <span class="field-label">Documento<span class="req">*</span></span>
+            <div class="d-flex gap-2">
+                <select name="tipo_documento" id="tipo_documento" class="input" style="max-width:190px" aria-label="Tipo de documento">
+                    @foreach (\App\Models\Persona::TIPOS as $codigo => [$etiqueta])
+                        <option value="{{ $codigo }}" @selected(old('tipo_documento', 'DNI') === $codigo)>{{ $etiqueta }}</option>
+                    @endforeach
+                </select>
+                <div class="input-wrap flex-grow-1">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="numero_documento" name="numero_documento" value="{{ old('numero_documento') }}" maxlength="12"
+                           class="input num @error('numero_documento') is-invalid @enderror" placeholder="Número" aria-label="Número de documento" required>
+                </div>
             </div>
-            @error('dni')
+            @error('numero_documento')
                 <span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>
             @else
-                <span class="field-hint" id="dniHint">Documento Nacional de Identidad, 8 dígitos.</span>
+                <span class="field-hint" id="docHint">8 dígitos.</span>
             @enderror
+            @error('tipo_documento')<span class="field-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</span>@enderror
         </div>
 
         <div class="note mt-4">
@@ -59,7 +67,8 @@
             <div class="mt-3">
                 @include('partials.member-card', [
                     'nombre' => old('nombre') ?: 'Nombre del huésped',
-                    'dni' => old('dni') ?: '— — — —',
+                    'dni' => old('numero_documento') ?: '— — — —',
+                    'tipo' => old('tipo_documento', 'DNI'),
                     'puntos' => 0,
                     'desde' => now()->locale('es')->isoFormat('MM/YYYY'),
                 ])
@@ -74,23 +83,39 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const nombre = document.getElementById('nombre');
-    const dni = document.getElementById('dni');
+    const tipo = document.getElementById('tipo_documento');
+    const dni = document.getElementById('numero_documento');
+    const hint = document.getElementById('docHint');
     const outNombre = document.querySelector('[data-mc="nombre"]');
     const outDni = document.querySelector('[data-mc="dni"]');
+    const outTipo = document.querySelector('[data-mc="tipo"]');
+    // Mismas reglas que el servidor (Persona::TIPOS)
+    const reglas = {
+        @foreach (\App\Models\Persona::TIPOS as $codigo => [$etiqueta, $patron, $texto])
+            {{ $codigo }}: { re: {!! $patron !!}, texto: @json($texto), etiqueta: @json($etiqueta) },
+        @endforeach
+    };
+    const valido = () => reglas[tipo.value].re.test(dni.value);
 
-    nombre.addEventListener('input', () => outNombre.textContent = nombre.value.trim() || 'Nombre del huésped');
-    dni.addEventListener('input', () => {
-        dni.value = dni.value.replace(/\D/g, '').slice(0, 8);
+    function actualizar() {
+        dni.value = (tipo.value === 'DNI' ? dni.value.replace(/\D/g, '') : dni.value.replace(/[^a-z0-9]/gi, '').toUpperCase()).slice(0, 12);
         outDni.textContent = dni.value || '— — — —';
-        dni.classList.toggle('is-valid', dni.value.length === 8);
-    });
+        outTipo.textContent = tipo.value;
+        dni.inputMode = tipo.value === 'DNI' ? 'numeric' : 'text';
+        if (hint) hint.textContent = reglas[tipo.value].etiqueta + ': ' + reglas[tipo.value].texto + '.';
+        dni.classList.toggle('is-valid', valido());
+    }
+    nombre.addEventListener('input', () => outNombre.textContent = nombre.value.trim() || 'Nombre del huésped');
+    dni.addEventListener('input', actualizar);
+    tipo.addEventListener('change', actualizar);
+    actualizar();
 
     document.getElementById('registrarForm').addEventListener('submit', function (e) {
-        if (!nombre.value.trim() || !/^\d{8}$/.test(dni.value)) {
+        if (!nombre.value.trim() || !valido()) {
             e.preventDefault();
             nombre.classList.toggle('is-invalid', !nombre.value.trim());
-            dni.classList.toggle('is-invalid', !/^\d{8}$/.test(dni.value));
-            showToast('Completa el nombre y un DNI de 8 dígitos.', 'warning', 'Revisa el formulario');
+            dni.classList.toggle('is-invalid', !valido());
+            showToast('Completa el nombre y un documento válido (' + reglas[tipo.value].etiqueta + ': ' + reglas[tipo.value].texto + ').', 'warning', 'Revisa el formulario');
             return;
         }
         const btn = document.getElementById('registrarBtn');

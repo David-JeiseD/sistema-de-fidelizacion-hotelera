@@ -1,4 +1,4 @@
-{{-- Tarjeta de membresía. Variables: $nombre, $dni, $puntos, $desde (texto) --}}
+{{-- Tarjeta de membresía. Variables: $nombre, $dni (número), $tipo (DNI/CE/PASAPORTE), $puntos, $desde (texto) --}}
 <div class="card-stage">
     <div class="member-card" data-tilt role="img" aria-label="Tarjeta de membresía de {{ $nombre }}: {{ $puntos }} puntos">
         <img class="mc-watermark" src="{{ $hotel->logo_url }}" alt="">
@@ -15,7 +15,7 @@
         <div class="mc-bottom">
             <div style="min-width:0">
                 <div class="mc-name" data-mc="nombre">{{ $nombre }}</div>
-                <div class="mc-meta">DNI <span data-mc="dni">{{ $dni }}</span></div>
+                <div class="mc-meta"><span data-mc="tipo">{{ $tipo ?? 'DNI' }}</span> <span data-mc="dni">{{ $dni }}</span></div>
             </div>
             <div class="mc-since">Miembro desde<b>{{ $desde }}</b></div>
         </div>

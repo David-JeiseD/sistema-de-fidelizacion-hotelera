@@ -78,6 +78,8 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
+            'empresa_id' => auth()->user()->empresa_id, // el personal nuevo entra a la empresa de quien lo registra
+            'rol' => 'recepcionista',
             'name' => $data['name'],
             'email' => $data['email'],
             'dni' => $data['dni'],

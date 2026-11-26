@@ -9,7 +9,12 @@ class MetodoPago extends Model
 {
     protected $table = 'metodos_pago';
 
-    protected $fillable = ['nombre', 'titular', 'numero', 'qr_path', 'activo'];
+    protected $fillable = ['hotel_id', 'nombre', 'titular', 'numero', 'qr_path', 'activo'];
+
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
 
     protected $casts = ['activo' => 'boolean'];
 

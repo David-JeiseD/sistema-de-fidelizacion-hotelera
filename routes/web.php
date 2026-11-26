@@ -36,18 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/habitaciones/asignar', [HabitacionController::class, 'asignar'])->name('habitaciones.asignar');
     Route::get('/habitaciones/asignar', [HabitacionController::class, 'mostrarFormulario'])->name('habitaciones.formulario');
 
-    Route::get('/canjes/lista/{cliente_id}/{opcion?}', function ($cliente_id, $opcion = null) {
-        $recompensas = \App\Models\Recompensa::all();
-        $cliente = \App\Models\Cliente::find($cliente_id);
-    
-        if (!$cliente) {
-            return redirect()->back()->with('error', 'Cliente no encontrado');
-        }
-    
-        $recompensaSeleccionada = $opcion ? \App\Models\Recompensa::find($opcion) : null;
-    
-        return view('canjes.lista', compact('recompensas', 'cliente', 'recompensaSeleccionada'));
-    })->name('canjes.lista');
+    Route::get('/canjes/lista/{cliente_id}/{opcion?}', [CanjeController::class, 'lista'])->name('canjes.lista');
     
     
     Route::post('/canjes/realizar', [CanjeController::class, 'realizar'])->name('canjes.realizar');

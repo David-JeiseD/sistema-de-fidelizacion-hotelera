@@ -14,7 +14,8 @@ class RecompensasTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('recompensas')->insert([
+        $empresaId = \App\Models\Hotel::actual()->empresa_id;
+        DB::table('recompensas')->insert(array_map(fn ($r) => $r + ['empresa_id' => $empresaId], [
             [
                 'nombre' => 'Vaso de Jugo',
                 'puntos' => 40,
@@ -43,6 +44,6 @@ class RecompensasTableSeeder extends Seeder
                 'nombre' => '1 Noche Gratis en Habitación Matrimonial Premium',
                 'puntos' => 1000,
             ],
-        ]);
+        ]));
     }
 }

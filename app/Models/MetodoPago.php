@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PerteneceAEmpresaPorHotel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class MetodoPago extends Model
 {
+    use PerteneceAEmpresaPorHotel;
+
     protected $table = 'metodos_pago';
 
     protected $fillable = ['hotel_id', 'nombre', 'titular', 'numero', 'qr_path', 'activo'];

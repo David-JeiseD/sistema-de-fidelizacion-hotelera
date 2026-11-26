@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Canje;
 use App\Models\Cliente;
-use App\Models\Hotel;
 use App\Models\Visita;
 
 class DashboardController extends Controller
@@ -12,13 +11,12 @@ class DashboardController extends Controller
     public function index()
     {
         $inicioMes = now()->startOfMonth();
-        $empresa = Hotel::actual()->empresa;
-        $hoteles = $empresa->hoteles()->pluck('id');
-        $visitasEmpresa = fn () => Visita::whereIn('hotel_id', $hoteles);
-        $canjesEmpresa = fn () => Canje::whereIn('hotel_id', $hoteles);
+        // Métricas de toda la empresa (cadena): el scope limita cada consulta a sus hoteles.
+        $visitasEmpresa = fn () => Visita::query();
+        $canjesEmpresa = fn () => Canje::query();
 
         $stats = [
-            'clientes' => Cliente::where('empresa_id', $empresa->id)->count(),
+            'clientes' => Cliente::count(),
             'estadias_mes' => $visitasEmpresa()->where('fecha', '>=', $inicioMes)->count(),
             'canjes_mes' => $canjesEmpresa()->where('fecha', '>=', $inicioMes)->count(),
             'puntos' => $visitasEmpresa()->sum('puntos') - $canjesEmpresa()->sum('puntos'),

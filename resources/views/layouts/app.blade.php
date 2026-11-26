@@ -42,6 +42,25 @@
                 </span>
             </a>
 
+            @php $hotelesEmpresa = \App\Models\Hotel::orderBy('nombre')->get(['id', 'nombre']); @endphp
+            <div class="hotel-switch">
+                <span class="nav-label p-0">Trabajando en</span>
+                @if ($hotelesEmpresa->count() > 1)
+                    <form method="POST" action="{{ route('hotel-activo') }}">
+                        @csrf
+                        <label class="visually-hidden" for="hotelActivo">Hotel activo</label>
+                        <select id="hotelActivo" name="hotel_id" onchange="this.form.submit()">
+                            @foreach ($hotelesEmpresa as $h)
+                                <option value="{{ $h->id }}" @selected($h->id === $hotel->id)>{{ $h->nombre }}</option>
+                            @endforeach
+                        </select>
+                        <noscript><button type="submit">Cambiar</button></noscript>
+                    </form>
+                @else
+                    <b title="{{ $hotel->nombre }}">{{ $hotel->nombre }}</b>
+                @endif
+            </div>
+
             @foreach ($nav as $grupo => $items)
                 <nav class="nav-group">
                     <div class="nav-label">{{ $grupo }}</div>

@@ -40,7 +40,7 @@ class MultilocalTest extends TestCase
             ->assertSessionHas('success', 'La persona ya estaba en la plataforma; quedó inscrita en tu club.');
 
         $this->assertSame(1, Persona::count());
-        $this->assertSame(2, Cliente::count());
+        $this->assertSame(2, Cliente::withoutGlobalScopes()->count()); // una membresía por empresa
         $this->assertSame('Ana Quispe', Persona::first()->nombre); // no se sobrescribe el nombre
     }
 
@@ -107,7 +107,7 @@ class MultilocalTest extends TestCase
         $this->get("/metodos-pago/{$qrA->id}/edit")->assertNotFound();
         $this->delete("/metodos-pago/{$qrA->id}")->assertNotFound();
         $this->get('/cobrar')->assertDontSee('Yape A');
-        $this->assertSame(1, MetodoPago::count());
+        $this->assertSame(1, MetodoPago::withoutGlobalScopes()->count());
     }
 
     public function test_recompensa_exclusiva_solo_vale_en_su_hotel(): void

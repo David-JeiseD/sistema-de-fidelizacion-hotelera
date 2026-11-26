@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PerteneceAEmpresa;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class Hotel extends Model
 {
+    use PerteneceAEmpresa;
+
     protected $table = 'hoteles';
 
     protected $fillable = [
@@ -19,26 +23,28 @@ class Hotel extends Model
         return $this->belongsTo(Empresa::class);
     }
 
+    public const SESION = 'hotel_activo_id';
+
     /**
-     * Hotel en el que trabaja el usuario actual.
-     * shortcut: toma el primer hotel de su empresa; la fase 2 agrega el selector de hotel activo en sesión.
+     * Hotel en el que trabaja el usuario: el elegido en la sesión o, si no hay o no es de
+     * su empresa (el scope lo descarta), el primero de la empresa. Sin usuario: el primero.
      */
     public static function actual(): self
     {
-        $empresaId = auth()->user()?->empresa_id;
+        $hoteles = static::with('empresa')->orderBy('id');
+        $elegido = session(self::SESION);
 
-        return static::with('empresa')
-            ->when($empresaId, fn ($q) => $q->where('empresa_id', $empresaId))
-            ->orderBy('id')
-            ->first()
+        return ($elegido ? (clone $hoteles)->find($elegido) : null)
+            ?? $hoteles->first()
             ?? static::crearPorDefecto();
     }
 
     private static function crearPorDefecto(): self
     {
-        $empresa = Empresa::create(['nombre' => 'Hotel Buena Vida']);
+        // Empresa sin hoteles: se le crea el primero. Base vacía (instalación nueva): empresa y hotel de ejemplo.
+        $empresa = Auth::user()?->empresa ?? Empresa::create(['nombre' => 'Hotel Buena Vida']);
 
-        return $empresa->hoteles()->create(['nombre' => 'Hotel Buena Vida'])->setRelation('empresa', $empresa);
+        return $empresa->hoteles()->create(['nombre' => $empresa->nombre])->setRelation('empresa', $empresa);
     }
 
     // La marca (logo, nombre del club, RUC) es de la empresa; el hotel la expone para las vistas.

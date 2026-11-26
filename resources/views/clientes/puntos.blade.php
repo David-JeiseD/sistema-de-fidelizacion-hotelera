@@ -3,9 +3,12 @@
 @section('title', 'Libreta de ' . $cliente->nombre)
 
 @php
+    // En una cadena se indica en qué hotel ocurrió cada movimiento
+    $variosHoteles = $visitas->pluck('hotel_id')->merge($canjes->pluck('hotel_id'))->unique()->count() > 1;
+    $donde = fn ($m) => $variosHoteles && $m->hotel ? ' · ' . $m->hotel->nombre : '';
     // Libreta: estadías (+) y canjes (−) en orden cronológico con saldo acumulado
-    $movimientos = $visitas->map(fn ($v) => ['fecha' => $v->fecha, 'tipo' => 'plus', 'titulo' => 'Estadía', 'detalle' => $v->habitacion?->nombre ?? 'Habitación', 'puntos' => $v->puntos, 'id' => 'v' . $v->id])
-        ->concat($canjes->map(fn ($c) => ['fecha' => $c->fecha, 'tipo' => 'minus', 'titulo' => 'Canje', 'detalle' => $c->recompensa?->nombre ?? 'Recompensa', 'puntos' => $c->puntos, 'id' => 'c' . $c->id]))
+    $movimientos = $visitas->map(fn ($v) => ['fecha' => $v->fecha, 'tipo' => 'plus', 'titulo' => 'Estadía' . $donde($v), 'detalle' => $v->habitacion?->nombre ?? 'Habitación', 'puntos' => $v->puntos, 'id' => 'v' . $v->id])
+        ->concat($canjes->map(fn ($c) => ['fecha' => $c->fecha, 'tipo' => 'minus', 'titulo' => 'Canje' . $donde($c), 'detalle' => $c->recompensa?->nombre ?? 'Recompensa', 'puntos' => $c->puntos, 'id' => 'c' . $c->id]))
         ->sortBy([['fecha', 'asc'], ['id', 'asc']])
         ->values();
     $saldo = 0;

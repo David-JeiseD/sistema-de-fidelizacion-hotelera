@@ -102,6 +102,15 @@ a:hover { color: var(--pine); }
 .brand-name { font-family: var(--serif); font-size: 20px; line-height: 1.1; color: #fbf6ea; }
 .brand-sub { font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: rgba(238, 230, 214, .55); margin-top: 3px; }
 
+.hotel-switch { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: rgba(0, 0, 0, .18); border: 1px solid rgba(232, 207, 155, .18); }
+.hotel-switch b { font-family: var(--serif); font-weight: 500; font-size: 15px; color: #fbf6ea; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hotel-switch select {
+    width: 100%; padding: 7px 30px 7px 10px; border-radius: 9px; cursor: pointer;
+    font: 600 13.5px/1.2 var(--sans); color: #fbf6ea; border: 1px solid rgba(232, 207, 155, .35);
+    background: rgba(255, 255, 255, .06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23e8cf9b' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 11px center;
+    appearance: none;
+}
+.hotel-switch select option { color: var(--ink); }
 .nav-group { display: flex; flex-direction: column; gap: 2px; }
 .nav-label { font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: rgba(238, 230, 214, .42); padding: 0 12px 8px; }
 .nav-link-hv {
@@ -659,6 +668,8 @@ a:hover { color: var(--pine); }
     .shell { grid-template-columns: minmax(0, 1fr); }
     .sidebar { position: sticky; z-index: 20; height: auto; flex-direction: row; align-items: center; gap: 6px; padding: 10px 12px; overflow-x: auto; scrollbar-width: none; }
     .sidebar::-webkit-scrollbar { display: none; }
+    .hotel-switch .nav-label, .hotel-switch b { display: none !important; }
+    .hotel-switch { padding: 0; background: none; border: 0; min-width: 130px; }
     .sidebar .brand-name, .sidebar .brand-sub, .nav-label, .sidebar-foot .user-meta { display: none !important; }
     .brand { padding: 0; margin-right: 6px; }
     .brand-seal { width: 38px; height: 38px; }

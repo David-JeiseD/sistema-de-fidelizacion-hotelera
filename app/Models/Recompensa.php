@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PerteneceAEmpresa;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Recompensa extends Model {
+    use PerteneceAEmpresa;
+
     use HasFactory;
     
     protected $fillable = ['empresa_id', 'hotel_id', 'nombre', 'puntos', 'excluye_puntos'];

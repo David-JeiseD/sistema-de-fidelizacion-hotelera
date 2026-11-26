@@ -16,7 +16,7 @@ class HabitacionController extends Controller
     {
         $hotel = Hotel::actual();
         $habitaciones = Habitacion::where('hotel_id', $hotel->id)->orderBy('puntos')->get();
-        $clientes = Cliente::with('persona')->where('empresa_id', $hotel->empresa_id)->get()->sortBy('nombre');
+        $clientes = Cliente::with('persona')->get()->sortBy('nombre');
         return view('habitaciones.asignar', compact('habitaciones', 'clientes'));
     }
 
@@ -28,7 +28,7 @@ class HabitacionController extends Controller
             'habitacion_id' => ['required', Rule::exists('habitaciones', 'id')->where('hotel_id', $hotel->id)],
         ]);
 
-        $cliente = ClienteController::miembro($request->documento, $hotel);
+        $cliente = ClienteController::miembro($request->documento);
         $habitacion = Habitacion::findOrFail($request->habitacion_id);
 
         // Regla de negocio: una estadía por huésped por día en cada hotel.

@@ -1,6 +1,6 @@
 # Plan: de un hotel a una plataforma multi-local
 
-> Estado: **fase 1 completada (2026-11-26)**. Siguiente: fase 2 (aislamiento con global scopes y hotel activo en sesión).
+> Estado: **fases 1 y 2 completadas (2026-11-26)**. Siguiente: fase 3 (roles y permisos).
 
 ## 1. La idea central
 
@@ -55,6 +55,8 @@ Quien tiene acceso a varios hoteles elige el **hotel activo** desde la barra lat
 - Archivos (logos, QR) en carpetas por empresa.
 - **Tests de fuga obligatorios**: un usuario de la empresa A nunca puede ver, editar ni canjear datos de la empresa B, aunque adivine el ID en la URL.
 
+**Cómo quedó (fase 2):** traits `PerteneceAEmpresa` (clientes, recompensas, hoteles) y `PerteneceAEmpresaPorHotel` (habitaciones, visitas, canjes, métodos de pago) en `app/Models/Concerns`. Filtran por la empresa del usuario y rellenan empresa/hotel al crear. El hotel activo vive en la sesión (`Hotel::SESION`) y se cambia desde la barra lateral; una sesión con un hotel ajeno vuelve al primero propio. **Atención:** las reglas de validación `exists`/`unique` y `DB::table()` no pasan por los scopes: siempre filtrar a mano ahí (ver `HabitacionController`). Pruebas en `tests/Feature/AislamientoTest.php`.
+
 ## 5. Reglas de negocio
 
 0. **Identidad global, puntos aislados.** La persona existe una sola vez en la plataforma; si otro hotel ya la registró, al inscribirla se vincula la misma persona en vez de duplicarla. Los puntos nunca cruzan de empresa: un hotel individual tiene sus puntos propios y una cadena los comparte entre sus locales. Una empresa no puede listar ni buscar personas de otras empresas: solo vincula a alguien escribiendo su documento.
@@ -73,7 +75,7 @@ Quien tiene acceso a varios hoteles elige el **hotel activo** desde la barra lat
 |---|---|---|
 | **0. Decisiones** | Este documento cerrado | Reglas claras antes de tocar código |
 | **1. Modelo de datos** ✅ | Tablas `empresas`, columnas `empresa_id`/`hotel_id`, uniques compuestos, **migración de los datos actuales** a una empresa "Hotel Buena Vida" | La app funciona igual que hoy |
-| **2. Aislamiento** | Global scopes, hotel activo en sesión, tests de fuga | Dos empresas de prueba conviven sin verse |
+| **2. Aislamiento** ✅ | Global scopes, hotel activo en sesión, tests de fuga | Dos empresas de prueba conviven sin verse |
 | **3. Roles** | Columna `rol`, políticas, menú según rol | Recepcionista ya no puede editar QR ni establecimiento |
 | **4. Pantallas de gestión** | Hoteles de la empresa, personal, selector de hotel, panel super-admin (empresas, plan, estado) | Puedes dar de alta un cliente nuevo sin tocar la base de datos |
 | **5. Reportes de cadena** | Panel consolidado vs. por hotel | El dueño ve toda su cadena |

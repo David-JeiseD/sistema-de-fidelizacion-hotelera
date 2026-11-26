@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\PerteneceAEmpresa;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 // Membresía: una persona inscrita en el club de una empresa. Los puntos viven aquí.
 class Cliente extends Model {
+    use PerteneceAEmpresa;
+
     use HasFactory;
 
     protected $fillable = ['empresa_id', 'persona_id'];

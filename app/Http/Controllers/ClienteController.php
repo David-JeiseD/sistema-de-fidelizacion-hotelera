@@ -60,7 +60,7 @@ class ClienteController extends Controller
         $request->validate(['documento' => 'required|string|max:20']);
 
         $hotel = Hotel::actual();
-        $cliente = self::miembro($request->documento, $hotel);
+        $cliente = self::miembro($request->documento);
 
         $visitas = Visita::with('habitacion', 'hotel')->where('cliente_id', $cliente->id)->get();
         $canjes = Canje::with('recompensa', 'hotel')->where('cliente_id', $cliente->id)->get();
@@ -74,15 +74,14 @@ class ClienteController extends Controller
 
     public function formularioPuntos()
     {
-        $clientes = Cliente::with('persona')->where('empresa_id', Hotel::actual()->empresa_id)->get();
+        $clientes = Cliente::with('persona')->get();
         return view('clientes.consultar_puntos', compact('clientes'));
     }
 
-    // Miembro del club de la empresa del hotel, por número de documento; error de validación si no existe.
-    public static function miembro(?string $documento, Hotel $hotel, string $campo = 'documento'): Cliente
+    // Miembro del club de la empresa (scope), por número de documento; error de validación si no existe.
+    public static function miembro(?string $documento, string $campo = 'documento'): Cliente
     {
         return Cliente::with('persona')
-            ->where('empresa_id', $hotel->empresa_id)
             ->porDocumento($documento)
             ->first()
             ?? throw ValidationException::withMessages([$campo => 'No hay ningún miembro del club con ese documento.']);

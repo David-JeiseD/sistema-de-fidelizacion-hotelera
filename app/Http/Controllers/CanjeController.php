@@ -17,7 +17,7 @@ class CanjeController extends Controller
     public function lista($cliente_id, $opcion = null)
     {
         $hotel = Hotel::actual();
-        $cliente = Cliente::with('persona')->where('empresa_id', $hotel->empresa_id)->find($cliente_id);
+        $cliente = Cliente::with('persona')->find($cliente_id); // el scope de empresa oculta miembros ajenos
 
         if (!$cliente) {
             return redirect()->route('clientes.puntos')->with('error', 'Cliente no encontrado');
@@ -40,13 +40,13 @@ class CanjeController extends Controller
         ]);
 
         $hotel = Hotel::actual();
-        // Solo recompensas válidas en este hotel y miembros de esta empresa.
+        // Solo recompensas válidas en este hotel; el scope limita miembros y catálogo a la empresa.
         $recompensa = Recompensa::disponiblesEn($hotel)->findOrFail($request->recompensa_id);
 
         // Bloqueo la fila del cliente: dos canjes simultáneos se ejecutan uno tras otro
         // y el segundo ve los puntos ya descontados.
         $ok = DB::transaction(function () use ($request, $recompensa, $hotel) {
-            $cliente = Cliente::where('empresa_id', $hotel->empresa_id)->lockForUpdate()->findOrFail($request->cliente_id);
+            $cliente = Cliente::lockForUpdate()->findOrFail($request->cliente_id);
 
             if ($cliente->total_puntos < $recompensa->puntos) {
                 return false;

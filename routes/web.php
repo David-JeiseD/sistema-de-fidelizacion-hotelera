@@ -43,6 +43,9 @@ Route::middleware(['auth'])->group(function () {
     
     
     
+    // Hotel activo (cadenas con varios locales)
+    Route::post('/hotel-activo', \App\Http\Controllers\HotelActivoController::class)->name('hotel-activo');
+
     // Establecimiento
     Route::get('/establecimiento', [EstablecimientoController::class, 'edit'])->name('establecimiento.edit');
     Route::put('/establecimiento', [EstablecimientoController::class, 'update'])->name('establecimiento.update');

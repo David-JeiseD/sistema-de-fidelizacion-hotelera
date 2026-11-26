@@ -568,7 +568,7 @@ a:hover { color: var(--pine); }
     .shell { grid-template-columns: minmax(0, 1fr); }
     .sidebar { position: sticky; z-index: 20; height: auto; flex-direction: row; align-items: center; gap: 6px; padding: 10px 12px; overflow-x: auto; scrollbar-width: none; }
     .sidebar::-webkit-scrollbar { display: none; }
-    .shell .brand-name, .shell .brand-sub, .nav-label, .sidebar-foot .user-meta { display: none !important; }
+    .sidebar .brand-name, .sidebar .brand-sub, .nav-label, .sidebar-foot .user-meta { display: none !important; }
     .brand { padding: 0; margin-right: 6px; }
     .brand-seal { width: 38px; height: 38px; }
     .nav-group { flex-direction: row; }

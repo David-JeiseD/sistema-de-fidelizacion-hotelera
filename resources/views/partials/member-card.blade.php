@@ -3,7 +3,7 @@
     <div class="member-card" data-tilt role="img" aria-label="Tarjeta de membresía de {{ $nombre }}: {{ $puntos }} puntos">
         <img class="mc-watermark" src="{{ asset('images/logo.jpg') }}" alt="">
         <div class="mc-top">
-            <div class="mc-brand">Buena Vida<small>Club de huéspedes</small></div>
+            <div class="mc-brand">{{ $hotel->nombre_corto }}<small>{{ $hotel->eslogan ?: 'Club de huéspedes' }}</small></div>
             <span class="mc-chip"></span>
         </div>
         <div>

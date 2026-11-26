@@ -8,6 +8,7 @@ use App\Http\Controllers\HabitacionController;
 use App\Http\Controllers\VisitaController;
 use App\Http\Controllers\CanjeController;
 use App\Http\Controllers\RecompensaController;
+use App\Http\Controllers\EstablecimientoController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -52,6 +53,10 @@ Route::middleware(['auth'])->group(function () {
     
     
     
+    // Establecimiento
+    Route::get('/establecimiento', [EstablecimientoController::class, 'edit'])->name('establecimiento.edit');
+    Route::put('/establecimiento', [EstablecimientoController::class, 'update'])->name('establecimiento.update');
+
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/home', function () {

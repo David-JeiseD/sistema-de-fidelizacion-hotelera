@@ -2,8 +2,8 @@
     <div class="brand">
         <span class="brand-seal"><img src="{{ asset('images/logo.jpg') }}" alt=""></span>
         <span>
-            <span class="brand-name d-block">Hotel Buena Vida</span>
-            <span class="brand-sub d-block">Club de huéspedes</span>
+            <span class="brand-name d-block">{{ $hotel->nombre }}</span>
+            <span class="brand-sub d-block">{{ $hotel->eslogan }}</span>
         </span>
     </div>
 

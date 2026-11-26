@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#1f3d36">
-    <title>@hasSection('title')@yield('title') · @endif Hotel Buena Vida</title>
+    <title>@hasSection('title')@yield('title') · @endif {{ $hotel->nombre }}</title>
     <link rel="icon" href="{{ asset('images/logo.jpg') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=fraunces:400,400i,500,500i,600|manrope:400,500,600,700&display=swap" rel="stylesheet">
@@ -24,6 +24,7 @@
                 ['clientes.puntos', ['clientes.puntos*', 'canjes.*'], 'fa-book-open', 'Libreta de puntos'],
             ],
             'Administración' => [
+                ['establecimiento.edit', 'establecimiento.*', 'fa-building', 'Establecimiento'],
                 ['register', 'register', 'fa-id-badge', 'Nuevo trabajador'],
             ],
         ];
@@ -34,8 +35,8 @@
             <a class="brand" href="{{ route('dashboard') }}">
                 <span class="brand-seal"><img src="{{ asset('images/logo.jpg') }}" alt=""></span>
                 <span>
-                    <span class="brand-name d-block">Buena Vida</span>
-                    <span class="brand-sub d-block">Club de huéspedes</span>
+                    <span class="brand-name d-block">{{ $hotel->nombre_corto }}</span>
+                    <span class="brand-sub d-block">{{ $hotel->eslogan }}</span>
                 </span>
             </a>
 

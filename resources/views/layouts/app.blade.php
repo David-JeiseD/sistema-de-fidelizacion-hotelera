@@ -35,6 +35,7 @@
                 ['personal.index', ['personal.*', 'register'], 'fa-id-badge', 'Personal', $gestionan],
             ],
             'Empresa' => [
+                ['reportes', 'reportes', 'fa-chart-column', 'Reportes', $gestionan],
                 ['hoteles.index', 'hoteles.*', 'fa-hotel', 'Hoteles', ['admin_empresa']],
                 ['recompensas.index', 'recompensas.*', 'fa-gift', 'Recompensas', ['admin_empresa']],
             ],

@@ -14,6 +14,7 @@ use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\RecompensaController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\TipoHabitacionController;
+use App\Http\Controllers\ReporteController;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
 
@@ -51,6 +52,8 @@ Route::middleware(['auth', 'empresa.activa'])->group(function () {
         Route::resource('metodos-pago', MetodoPagoController::class)
             ->except('show')
             ->parameters(['metodos-pago' => 'metodo']);
+
+        Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes');
 
         Route::resource('tipos-habitacion', TipoHabitacionController::class)
             ->except('show')

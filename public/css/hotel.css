@@ -628,6 +628,56 @@ a:hover { color: var(--pine); }
 .poster:fullscreen .poster-exit, .poster.is-full .poster-exit { display: inline-flex; }
 .poster-exit { display: none; position: absolute; top: 18px; right: 18px; }
 
+/* ---------- Reportes ---------- */
+:root { --serie-1: #2f8f6a; --serie-2: #d0912a; } /* validadas: dataviz validate_palette (light, sobre #fffcf6) */
+
+.filtros { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.segmentado { display: inline-flex; padding: 4px; gap: 2px; border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line); }
+.segmentado a { padding: 8px 14px; border-radius: 9px; font-weight: 700; font-size: 13px; color: var(--ink-2); text-decoration: none; transition: background .2s, color .2s; }
+.segmentado a:hover { color: var(--ink); }
+.segmentado a[aria-current="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+.delta { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700; margin-top: 8px; }
+.delta.sube { color: var(--sage); }
+.delta.baja { color: var(--terra); }
+.delta.igual { color: var(--ink-3); }
+
+.grafico { position: relative; padding: 8px 8px 0 44px; }
+.grafico-area { position: relative; height: 240px; }
+.grafico-linea { position: absolute; left: 0; right: 0; border-top: 1px solid var(--line); }
+.grafico-linea span { position: absolute; left: -44px; top: -8px; width: 38px; text-align: right; font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.grafico-cols { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; }
+.grafico-col { display: flex; justify-content: center; align-items: flex-end; gap: 2px; height: 100%; border-radius: 8px; outline: none; transition: background .15s; }
+.grafico-col:hover, .grafico-col:focus-visible { background: rgba(31, 61, 54, .05); }
+.grafico-col:focus-visible { box-shadow: inset 0 0 0 2px var(--brass); }
+.grafico-col:hover .barra, .grafico-col:focus-visible .barra { filter: brightness(1.1); }
+.barra { width: min(14px, 38%); border-radius: 4px 4px 0 0; transition: filter .15s; }
+.barra.s1 { background: var(--serie-1); }
+.barra.s2 { background: var(--serie-2); }
+.grafico-ejes { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); margin-top: 8px; }
+.grafico-ejes span { text-align: center; font-size: 11.5px; color: var(--ink-3); text-transform: capitalize; }
+.leyenda { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+.leyenda i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
+.tooltip-hv {
+    position: fixed; z-index: 1070; pointer-events: none; padding: 10px 12px; border-radius: 10px;
+    background: var(--ink); color: #f3ead6; font-size: 12.5px; box-shadow: 0 16px 32px -14px rgba(0, 0, 0, .5);
+    min-width: 170px; opacity: 0; transform: translateY(4px); transition: opacity .12s, transform .12s;
+}
+.tooltip-hv.visible { opacity: 1; transform: none; }
+.tooltip-hv .t-mes { color: rgba(243, 234, 214, .65); text-transform: capitalize; margin-bottom: 6px; }
+.tooltip-hv .t-fila { display: flex; align-items: center; gap: 8px; }
+.tooltip-hv .t-fila + .t-fila { margin-top: 4px; }
+.tooltip-hv .t-fila b { font-size: 14px; color: #fff; font-variant-numeric: tabular-nums; min-width: 52px; }
+.tooltip-hv .t-key { width: 12px; height: 2px; border-radius: 2px; }
+
+.ranking { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.ranking li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; font-size: 13.5px; }
+.ranking .r-nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ranking .r-valor { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ranking .r-pista { grid-column: 1 / -1; height: 8px; border-radius: 99px; background: var(--paper-2); }
+.ranking .r-pista span { display: block; height: 100%; border-radius: inherit; background: var(--serie-1); }
+.tabla-datos summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--pine-2); padding: 14px 28px; }
+
 /* ---------- Toast ---------- */
 .toast-container { z-index: 1080; }
 .toast.hv-toast {

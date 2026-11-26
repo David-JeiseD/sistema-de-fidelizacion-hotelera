@@ -1,6 +1,6 @@
 # Plan: de un hotel a una plataforma multi-local
 
-> Estado: **fases 1 a 4 completadas (2026-11-26): el sistema ya se puede vender a varias empresas.** Siguiente (opcional): fase 5, reportes consolidados de cadena.
+> Estado: **fases 1 a 5 completadas (2026-11-26).** Queda la fase 6 (opcional): subdominios, cobro de suscripción, vencimiento de puntos.
 
 ## 1. La idea central
 
@@ -80,7 +80,7 @@ Quien tiene acceso a varios hoteles elige el **hotel activo** desde la barra lat
 | **2. Aislamiento** ✅ | Global scopes, hotel activo en sesión, tests de fuga | Dos empresas de prueba conviven sin verse |
 | **3. Roles** ✅ | Columna `rol`, políticas, menú según rol | Recepcionista ya no puede editar QR ni establecimiento |
 | **4. Pantallas de gestión** ✅ | Hoteles de la empresa, personal, selector de hotel, panel super-admin (empresas, plan, estado) | Puedes dar de alta un cliente nuevo sin tocar la base de datos |
-| **5. Reportes de cadena** | Panel consolidado vs. por hotel | El dueño ve toda su cadena |
+| **5. Reportes de cadena** ✅ | Panel consolidado vs. por hotel | El dueño ve toda su cadena |
 | **6. Opcional** | Subdominios (`sol.tuapp.com`), cobro de suscripción, vencimiento de puntos, auditoría | Producto listo para escalar |
 
 Cada fase deja la app funcionando y con tests verdes; se puede vender después de la fase 4.
@@ -119,3 +119,7 @@ Compartir la identidad entre empresas implica que el nombre registrado por un ho
 - **Dar de alta un cliente:** Plataforma → Nueva empresa (empresa + primer hotel + su administrador). El administrador completa logo, QR, tipos de habitación, recompensas y personal.
 - **Plan:** número de hoteles por empresa, editable en Plataforma; no puede bajar de los hoteles que ya tiene.
 - **Desactivar en vez de borrar:** personal, tipos de habitación y recompensas. Borrar un tipo de habitación o una recompensa con uso borraría en cascada estadías o canjes (y puntos), por eso la app lo impide.
+
+## 12. Reportes (fase 5)
+
+`/reportes` (administrador y gerente; el gerente solo ve sus hoteles). Periodos: este mes, mes anterior, últimos 30 días y este año, en la hora del hotel activo, comparados con el periodo anterior de igual duración. Incluye estadías, puntos otorgados, canjes, huéspedes activos, nuevos miembros, tasa de canje, puntos por mes (12 meses), desglose por hotel y rankings. Colores de las series validados con el script de la skill de visualización (`--serie-1`, `--serie-2` en `hotel.css`). Se agrega en PHP: si una empresa supera ~100k estadías al año, pasar a agregados en SQL o a una tabla resumen.

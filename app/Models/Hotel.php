@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\PerteneceAEmpresa;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -47,6 +48,19 @@ class Hotel extends Model
     }
 
     public const SESION = 'hotel_activo_id';
+
+    public const ZONA_POR_DEFECTO = 'America/Lima';
+
+    // Las fechas se guardan en UTC; "hoy", "este mes" y lo que se muestra van en la hora del hotel.
+    public function ahora(): Carbon
+    {
+        return now($this->zona_horaria ?: self::ZONA_POR_DEFECTO);
+    }
+
+    public static function enHoraLocal($fecha, ?string $zona = null): Carbon
+    {
+        return Carbon::parse($fecha, 'UTC')->setTimezone($zona ?: self::ZONA_POR_DEFECTO);
+    }
 
     /**
      * Hotel en el que trabaja el usuario: el elegido en la sesión o, si no hay o no le está

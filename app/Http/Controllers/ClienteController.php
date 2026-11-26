@@ -49,18 +49,25 @@ class ClienteController extends Controller
             throw ValidationException::withMessages(['numero_documento' => 'Esta persona ya es miembro de tu club.']);
         }
 
-        return redirect()->route('habitaciones.formulario', ['documento' => $persona->numero_documento])
+        return redirect()->route('habitaciones.formulario', ['cliente' => $membresia->id])
             ->with('success', $persona->wasRecentlyCreated
                 ? 'Huésped registrado. Asígnale su primera habitación.'
                 : 'La persona ya estaba en la plataforma; quedó inscrita en tu club.');
     }
 
+    // Búsqueda por documento (POST) → libreta con URL propia por id (GET): recargar no reenvía
+    // el formulario y el documento no queda en la URL ni en el historial.
     public function consultarPuntos(Request $request)
     {
         $request->validate(['documento' => 'required|string|max:20']);
 
+        return redirect()->route('clientes.libreta', self::miembro($request->documento));
+    }
+
+    public function libreta(Cliente $cliente) // el scope de empresa da 404 a miembros ajenos
+    {
+        $cliente->load('persona');
         $hotel = Hotel::actual();
-        $cliente = self::miembro($request->documento);
 
         $visitas = Visita::with('habitacion', 'hotel')->where('cliente_id', $cliente->id)->get();
         $canjes = Canje::with('recompensa', 'hotel')->where('cliente_id', $cliente->id)->get();

@@ -25,7 +25,7 @@
                 ['dashboard', 'dashboard', 'fa-compass', 'Panel', $operan],
                 ['clientes.create', 'clientes.create', 'fa-user-plus', 'Registrar huésped', $operan],
                 ['habitaciones.formulario', 'habitaciones.*', 'fa-key', 'Asignar habitación', $operan],
-                ['clientes.puntos', ['clientes.puntos*', 'canjes.*'], 'fa-book-open', 'Libreta de puntos', $operan],
+                ['clientes.puntos', ['clientes.puntos*', 'clientes.libreta', 'canjes.*'], 'fa-book-open', 'Libreta de puntos', $operan],
                 ['cobrar', 'cobrar', 'fa-qrcode', 'Cobrar con QR', $operan],
             ],
             'Este hotel' => [

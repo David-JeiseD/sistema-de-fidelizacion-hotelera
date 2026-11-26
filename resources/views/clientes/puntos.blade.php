@@ -7,8 +7,8 @@
     $variosHoteles = $visitas->pluck('hotel_id')->merge($canjes->pluck('hotel_id'))->unique()->count() > 1;
     $donde = fn ($m) => $variosHoteles && $m->hotel ? ' · ' . $m->hotel->nombre : '';
     // Libreta: estadías (+) y canjes (−) en orden cronológico con saldo acumulado
-    $movimientos = $visitas->map(fn ($v) => ['fecha' => $v->fecha, 'tipo' => 'plus', 'titulo' => 'Estadía' . $donde($v), 'detalle' => $v->habitacion?->nombre ?? 'Habitación', 'puntos' => $v->puntos, 'id' => 'v' . $v->id])
-        ->concat($canjes->map(fn ($c) => ['fecha' => $c->fecha, 'tipo' => 'minus', 'titulo' => 'Canje' . $donde($c), 'detalle' => $c->recompensa?->nombre ?? 'Recompensa', 'puntos' => $c->puntos, 'id' => 'c' . $c->id]))
+    $movimientos = $visitas->map(fn ($v) => ['fecha' => $v->fecha, 'zona' => $v->hotel?->zona_horaria, 'tipo' => 'plus', 'titulo' => 'Estadía' . $donde($v), 'detalle' => $v->habitacion?->nombre ?? 'Habitación', 'puntos' => $v->puntos, 'id' => 'v' . $v->id])
+        ->concat($canjes->map(fn ($c) => ['fecha' => $c->fecha, 'zona' => $c->hotel?->zona_horaria, 'tipo' => 'minus', 'titulo' => 'Canje' . $donde($c), 'detalle' => $c->recompensa?->nombre ?? 'Recompensa', 'puntos' => $c->puntos, 'id' => 'c' . $c->id]))
         ->sortBy([['fecha', 'asc'], ['id', 'asc']])
         ->values();
     $saldo = 0;
@@ -31,7 +31,7 @@
     </div>
     <div class="d-flex gap-2 flex-wrap">
         <a href="{{ route('clientes.puntos') }}" class="btn-hv btn-ghost"><i class="fas fa-magnifying-glass"></i>Otra consulta</a>
-        <a href="{{ route('habitaciones.formulario', ['documento' => $cliente->dni]) }}" class="btn-hv btn-ghost"><i class="fas fa-key"></i>Asignar habitación</a>
+        <a href="{{ route('habitaciones.formulario', ['cliente' => $cliente->id]) }}" class="btn-hv btn-ghost"><i class="fas fa-key"></i>Asignar habitación</a>
     </div>
 </header>
 
@@ -114,7 +114,7 @@
                 <tbody>
                     @foreach ($movimientos as $m)
                         <tr>
-                            <td class="date">{{ \Carbon\Carbon::parse($m['fecha'])->format('d/m/Y') }}</td>
+                            <td class="date">{{ $hotel::enHoraLocal($m['fecha'], $m['zona'])->format('d/m/Y') }}</td>
                             <td>
                                 <div class="concept">
                                     <span class="feed-icon {{ $m['tipo'] }}" style="width:34px;height:34px;border-radius:10px"><i class="fas {{ $m['tipo'] === 'plus' ? 'fa-bed' : 'fa-gift' }}"></i></span>

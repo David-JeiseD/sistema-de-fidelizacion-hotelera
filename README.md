@@ -1,66 +1,54 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de fidelización hotelera
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Programa de puntos para hoteles y cadenas: registra huéspedes, asigna habitaciones (cada estadía suma puntos), canjea recompensas y cobra con QR. Varias empresas comparten una misma instalación sin ver los datos de las otras.
 
-## About Laravel
+- **Empresas** (cadenas u hoteles individuales) con su marca, plan y hoteles.
+- **Huéspedes únicos en toda la plataforma** (DNI, CE o pasaporte); **los puntos son de cada empresa** y se comparten entre los hoteles de una cadena.
+- **Roles:** super-admin de plataforma, administrador de empresa, gerente y recepcionista.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Detalle del diseño y las reglas: [docs/PLAN-MULTILOCAL.md](docs/PLAN-MULTILOCAL.md).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2+ con `mbstring`, `pdo_mysql`, `gd` y `fileinfo` (y `pdo_sqlite` para los tests)
+- MySQL 8
+- Composer
 
-## Learning Laravel
+## Instalación local (Laragon u otro)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+composer install
+cp .env.example .env          # ajusta DB_* si hace falta
+php artisan key:generate
+php artisan migrate
+php artisan storage:link      # logos y QR subidos
+php artisan plataforma:super-admin tu@correo.com --nombre="Tu Nombre" --dni=12345678
+php artisan serve
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Con el super-admin entras a **Plataforma** y das de alta la primera empresa (empresa + hotel + su administrador). El administrador completa lo demás desde la app: logo, tipos de habitación, recompensas, QR de pago y personal.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+> En Windows con varias versiones de PHP, usa la de Laragon (`C:\laragon\bin\php\php-8.2.x\php.exe`) si el `php` del PATH no tiene `mbstring`.
 
-## Laravel Sponsors
+## Docker
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+cp .env.docker.example .env.docker
+# Completa en .env.docker: APP_KEY (php artisan key:generate --show), DB_PASSWORD y MYSQL_ROOT_PASSWORD (la misma)
+docker compose up --build
+docker compose exec laravel-backend php artisan plataforma:super-admin tu@correo.com --dni=12345678
+```
 
-### Premium Partners
+La app queda en http://localhost:8000. MySQL solo escucha en `127.0.0.1:3306`.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Correo
 
-## Contributing
+Con `MAIL_MAILER=log` (por defecto) no se envían correos: el enlace "¿Olvidaste tu contraseña?" se oculta y las contraseñas las cambia un administrador desde **Personal**. Configura `MAIL_*` con un SMTP real para activarlo.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Tests
 
-## Code of Conduct
+```bash
+php artisan test
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Usan SQLite en memoria. Incluyen pruebas de aislamiento entre empresas (`tests/Feature/AislamientoTest.php`) y de permisos por rol (`RolesTest.php`).

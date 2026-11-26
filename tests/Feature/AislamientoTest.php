@@ -119,7 +119,7 @@ class AislamientoTest extends TestCase
         $this->assertSame($cusco->id, $visita->hotel_id);
         // 200 (Lima) − 50 (canje) + 70 (Cusco): una sola libreta para toda la cadena
         $this->assertSame(220, $this->miembroA->fresh()->total_puntos);
-        $this->post('/clientes/puntos', ['documento' => '11111111'])->assertSee('Estadía · Buena Vida Cusco');
+        $this->followingRedirects()->post('/clientes/puntos', ['documento' => '11111111'])->assertSee('Estadía · Buena Vida Cusco');
     }
 
     public function test_los_registros_nuevos_toman_empresa_y_hotel_del_usuario(): void

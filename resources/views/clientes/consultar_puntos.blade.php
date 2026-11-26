@@ -20,7 +20,7 @@
             <div class="d-flex gap-2 flex-wrap">
                 <div class="input-wrap flex-grow-1">
                     <i class="fas fa-magnifying-glass"></i>
-                    <input name="documento" id="documento" value="{{ old('documento', request('documento')) }}" autocomplete="off" required
+                    <input name="documento" id="documento" value="{{ old('documento') }}" autocomplete="off" required
                            class="input input-lg @error('documento') is-invalid @enderror" placeholder="Ej. 76799754 o “María”">
                 </div>
                 <button type="submit" class="btn-hv btn-lg" id="consultarBtn">Abrir libreta</button>

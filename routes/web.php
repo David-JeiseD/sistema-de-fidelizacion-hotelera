@@ -31,6 +31,7 @@ Route::middleware(['auth', 'empresa.activa'])->group(function () {
         Route::post('/clientes/store', [ClienteController::class, 'store'])->name('clientes.store');
         Route::get('/clientes/puntos', [ClienteController::class, 'formularioPuntos'])->name('clientes.puntos');
         Route::post('/clientes/puntos', [ClienteController::class, 'consultarPuntos'])->name('clientes.puntos.consultar');
+        Route::get('/clientes/{cliente}/libreta', [ClienteController::class, 'libreta'])->name('clientes.libreta');
 
         Route::get('/habitaciones/asignar', [HabitacionController::class, 'mostrarFormulario'])->name('habitaciones.formulario');
         Route::post('/habitaciones/asignar', [HabitacionController::class, 'asignar'])->name('habitaciones.asignar');

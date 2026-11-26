@@ -27,11 +27,7 @@
         <h1 class="page-title">Recompensas <em>del club</em></h1>
         <p class="page-lead">Elige un vale y confirma el canje. Los puntos se descuentan de la libreta al instante.</p>
     </div>
-    <form method="POST" action="{{ route('clientes.puntos.consultar') }}">
-        @csrf
-        <input type="hidden" name="documento" value="{{ $cliente->dni }}">
-        <button class="btn-hv btn-ghost"><i class="fas fa-arrow-left"></i>Volver a la libreta</button>
-    </form>
+    <a href="{{ route('clientes.libreta', $cliente) }}" class="btn-hv btn-ghost"><i class="fas fa-arrow-left"></i>Volver a la libreta</a>
 </header>
 
 <section class="panel member-strip reveal d1">

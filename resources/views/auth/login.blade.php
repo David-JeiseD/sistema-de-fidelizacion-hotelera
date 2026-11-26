@@ -60,8 +60,11 @@
                         <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                         Recordarme
                     </label>
-                    @if (Route::has('password.request'))
+                    {{-- Sin correo configurado (MAIL_MAILER=log) el enlace no llegaría: la contraseña la cambia un administrador desde Personal --}}
+                    @if (Route::has('password.request') && config('mail.default') !== 'log')
                         <a class="link" href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+                    @else
+                        <span class="subtle" style="font-size:12.5px">¿Olvidaste tu contraseña? Pídele al administrador que la cambie.</span>
                     @endif
                 </div>
 

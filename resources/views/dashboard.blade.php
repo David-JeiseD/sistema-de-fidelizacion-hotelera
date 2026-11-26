@@ -40,8 +40,8 @@
 <div class="grid grid-4 mt-4">
     @foreach ([
         ['Huéspedes', $stats['clientes'], 'fa-users', 'miembros del club'],
-        ['Estadías', $stats['estadias_mes'], 'fa-bed', 'en ' . now()->locale('es')->isoFormat('MMMM')],
-        ['Canjes', $stats['canjes_mes'], 'fa-gift', 'en ' . now()->locale('es')->isoFormat('MMMM')],
+        ['Estadías', $stats['estadias_mes'], 'fa-bed', 'en ' . $mes],
+        ['Canjes', $stats['canjes_mes'], 'fa-gift', 'en ' . $mes],
         ['Puntos vigentes', $stats['puntos'], 'fa-star', 'por canjear en total'],
     ] as $i => [$label, $valor, $icono, $pie])
         <div class="panel stat reveal d{{ min($i + 1, 4) }}">
@@ -69,7 +69,7 @@
                     <span class="feed-icon {{ $mov['tipo'] }}"><i class="fas {{ $mov['tipo'] === 'plus' ? 'fa-bed' : 'fa-gift' }}"></i></span>
                     <div style="min-width:0">
                         <div class="feed-title">{{ $mov['cliente'] ?? 'Huésped eliminado' }}</div>
-                        <div class="feed-sub">{{ $mov['detalle'] }} · {{ \Carbon\Carbon::parse($mov['fecha'])->locale('es')->isoFormat('D MMM YYYY') }}</div>
+                        <div class="feed-sub">{{ $mov['detalle'] }} · {{ $hotel::enHoraLocal($mov['fecha'], $mov['zona'])->locale('es')->isoFormat('D MMM YYYY') }}</div>
                     </div>
                     <span class="pill {{ $mov['tipo'] === 'plus' ? 'pill-plus' : 'pill-minus' }} num">
                         {{ $mov['tipo'] === 'plus' ? '+' : '−' }}{{ $mov['puntos'] }} pts

@@ -13,7 +13,7 @@
             default => 'fa-bed',
         };
     };
-    $dniInicial = old('documento', request('documento'));
+    $dniInicial = old('documento', $documentoInicial);
 @endphp
 
 @section('content')

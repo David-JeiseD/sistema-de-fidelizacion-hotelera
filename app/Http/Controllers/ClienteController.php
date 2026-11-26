@@ -24,7 +24,7 @@ class ClienteController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'dni' => 'required|string|max:8|unique:clientes,dni',
+            'dni' => 'required|digits:8|unique:clientes,dni',
         ]);
 
         // Crear el cliente con total_puntos inicializado en 0
@@ -40,6 +40,11 @@ class ClienteController extends Controller
  
     public function consultarPuntos(Request $request)
     {
+        $request->validate(
+            ['dni' => 'required|exists:clientes,dni'],
+            ['dni.exists' => 'No existe un cliente con ese DNI.']
+        );
+
         $cliente = Cliente::where('dni', $request->dni)->firstOrFail();
         $visitas = Visita::where('cliente_id', $cliente->id)->get();
         $canjes = Canje::where('cliente_id', $cliente->id)->get();
@@ -52,14 +57,5 @@ class ClienteController extends Controller
     {
         $clientes = Cliente::all(['id', 'dni', 'nombre']);
         return view('clientes.consultar_puntos', compact('clientes'));
-    }
-
-    public function actualizarPuntos($cliente_id, $puntos)
-    {
-        $cliente = Cliente::findOrFail($cliente_id);
-        $cliente->total_puntos += $puntos; // Sumar puntos al cliente
-        $cliente->save();
-
-        return redirect()->route('clientes.index')->with('success', 'Puntos actualizados correctamente');
     }
 }

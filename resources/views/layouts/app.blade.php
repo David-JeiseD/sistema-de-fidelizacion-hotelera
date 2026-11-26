@@ -263,6 +263,10 @@
         @if(session('warning'))
             showToast('{{ session('warning') }}', 'warning', 'Advertencia');
         @endif
+
+        @if($errors->any())
+            showToast(@json($errors->first()), 'error', 'Error');
+        @endif
     });
     </script>
 </body>

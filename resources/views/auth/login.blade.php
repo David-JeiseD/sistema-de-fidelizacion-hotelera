@@ -101,6 +101,11 @@
                             <i class="fas fa-sign-in-alt me-2"></i>Ingresar
                         </button>
                     </div>
+                    @if (Route::has('password.request'))
+                        <a class="btn btn-link" href="{{ route('password.request') }}">
+                            {{ __('Forgot Your Password?') }}
+                        </a>
+                    @endif
                 </form>
             </div>
         </div>

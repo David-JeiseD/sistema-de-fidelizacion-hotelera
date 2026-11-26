@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fidelhotel",
+      "runtimeExecutable": "C:/laragon/bin/php/php-8.2.18-Win32-vs16-x64/php.exe",
+      "runtimeArgs": ["artisan", "serve", "--host=127.0.0.1", "--port=8010"],
+      "port": 8010
+    }
+  ]
+}
